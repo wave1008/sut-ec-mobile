@@ -70,6 +70,30 @@ object CartStore {
         cartOf(userId)
     }
 
+    // ゲストカート統合: 各明細の数量をサーバーカートへ加算(既存があれば +、無ければ挿入)。
+    // 不明な product・非正の数量は無視。1トランザクションでまとめて適用。
+    suspend fun merge(userId: UUID, items: List<com.sutec.mobile.data.dto.AddCartItemRequest>): CartDto = dbQuery {
+        val valid = CatalogRepository.productsInTx().mapTo(HashSet()) { it.id }
+        for (item in items) {
+            if (item.productId !in valid || item.quantity <= 0) continue
+            val existing = CartItems.selectAll()
+                .where { (CartItems.cartUserId eq userId) and (CartItems.productId eq item.productId) }
+                .firstOrNull()
+            if (existing != null) {
+                CartItems.update({ (CartItems.cartUserId eq userId) and (CartItems.productId eq item.productId) }) {
+                    it[CartItems.quantity] = existing[CartItems.quantity] + item.quantity
+                }
+            } else {
+                CartItems.insert {
+                    it[cartUserId] = userId
+                    it[CartItems.productId] = item.productId
+                    it[CartItems.quantity] = item.quantity
+                }
+            }
+        }
+        cartOf(userId)
+    }
+
     suspend fun remove(userId: UUID, productId: String): CartDto = dbQuery {
         CartItems.deleteWhere { (cartUserId eq userId) and (CartItems.productId eq productId) }
         cartOf(userId)

@@ -3,6 +3,7 @@ package com.sutec.mobile.server
 import com.sutec.mobile.data.dto.AddCartItemRequest
 import com.sutec.mobile.data.dto.CartDto
 import com.sutec.mobile.data.dto.LoginRequest
+import com.sutec.mobile.data.dto.MergeCartRequest
 import com.sutec.mobile.data.dto.PageResponse
 import com.sutec.mobile.data.dto.PlaceOrderRequest
 import com.sutec.mobile.data.dto.SignupRequest
@@ -234,6 +235,29 @@ class ApiIntegrationTest {
             bearer(token); jsonBody(PlaceOrderRequest(addresses.first().id, payments.first().id))
         }
         assertEquals(HttpStatusCode.BadRequest, resp.status)
+    }
+
+    @Test fun cart_merge_sums_quantities() = runApi { client ->
+        val token = newUser(client).token
+        // サーバーカートに electronics_1 x1
+        client.post("/api/v1/cart/items") { bearer(token); jsonBody(AddCartItemRequest("electronics_1", 1)) }
+        // ゲストカート相当をマージ: electronics_1 x2(加算→3) / home_2 x1(新規) / 不明productは無視
+        val merged: CartDto = client.post("/api/v1/cart/merge") {
+            bearer(token)
+            jsonBody(
+                MergeCartRequest(
+                    listOf(
+                        AddCartItemRequest("electronics_1", 2),
+                        AddCartItemRequest("home_2", 1),
+                        AddCartItemRequest("nonexistent_product", 5),
+                    ),
+                ),
+            )
+        }.body()
+        val qty = merged.items.associate { it.product.id to it.quantity }
+        assertEquals(3, qty["electronics_1"], "既存は加算される")
+        assertEquals(1, qty["home_2"], "新規は挿入される")
+        assertTrue(!qty.containsKey("nonexistent_product"), "不明productは無視")
     }
 
     // ===== お気に入り =====

@@ -1,6 +1,7 @@
 package com.sutec.mobile.server.routes
 
 import com.sutec.mobile.data.dto.AddCartItemRequest
+import com.sutec.mobile.data.dto.MergeCartRequest
 import com.sutec.mobile.data.dto.PlaceOrderRequest
 import com.sutec.mobile.data.dto.SetQuantityRequest
 import com.sutec.mobile.data.model.Address
@@ -23,6 +24,10 @@ fun Route.cartRoutes() {
     post("/cart/items") {
         val req = call.receive<AddCartItemRequest>()
         call.respond(CartStore.addItem(call.userId(), req.productId, req.quantity))
+    }
+    post("/cart/merge") {
+        val req = call.receive<MergeCartRequest>()
+        call.respond(CartStore.merge(call.userId(), req.items))
     }
     patch("/cart/items/{productId}") {
         val req = call.receive<SetQuantityRequest>()
