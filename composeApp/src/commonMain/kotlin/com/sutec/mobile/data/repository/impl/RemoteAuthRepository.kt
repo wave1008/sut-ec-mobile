@@ -11,7 +11,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,18 +32,20 @@ class RemoteAuthRepository(
     override val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
     init {
-        // 保存済みトークンで /me を叩きセッション復元。401(無効/期限切れ)ならログアウト扱い。
-        // ネットワーク不通など不確定失敗ではトークンを消さない(サーバー復帰後に使える)。
+        // 保存済みトークンで /me を叩きセッション復元。401(無効/期限切れ)なら ApiClient が
+        // token を破棄し、下の collector が currentUser=null にする。通信不通では消さない。
         if (tokenStore.current() != null) {
             scope.launch {
                 val resp = runCatching { api.http.get("me") }.getOrNull()
-                when {
-                    resp == null -> Unit
-                    resp.status == HttpStatusCode.Unauthorized -> tokenStore.clear()
-                    resp.status.isSuccess() -> _currentUser.value = runCatching { resp.body<User>() }.getOrNull()
-                    else -> Unit
+                if (resp != null && resp.status.isSuccess()) {
+                    _currentUser.value = runCatching { resp.body<User>() }.getOrNull()
                 }
             }
+        }
+        // トークン失効(401でApiClientが破棄)やログアウトで token が null になったら
+        // ユーザーもクリアし、アプリ全体をログアウト状態に反応させる。
+        scope.launch {
+            tokenStore.token.collect { token -> if (token == null) _currentUser.value = null }
         }
     }
 
