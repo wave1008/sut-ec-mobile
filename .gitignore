@@ -17,3 +17,6 @@ dist/
 iosApp/Pods/
 iosApp/*.xcworkspace/xcuserdata/
 iosApp/**/*.xcuserstate
+
+# ローカルMCP設定(マシン固有の絶対パスを含む)
+.mcp.json
