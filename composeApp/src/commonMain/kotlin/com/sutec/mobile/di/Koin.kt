@@ -6,6 +6,7 @@ import com.sutec.mobile.data.repository.CartRepository
 import com.sutec.mobile.data.repository.OrderRepository
 import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.WishlistRepository
+import com.russhwolf.settings.Settings
 import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.impl.RemoteAccountRepository
@@ -34,8 +35,10 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication =
 val appModule = module {
     single { LocaleController() }
 
+    // Settings で JWT を永続化(no-arg が SharedPreferences/NSUserDefaults を自動供給)。
     // TokenStore は AuthRepository が set/clear、ApiClient が付与、他 Remote 実装が購読して再取得。
-    single { TokenStore() }
+    single<Settings> { Settings() }
+    single { TokenStore(get()) }
     single { ApiClient(get()) }
 
     single<ProductRepository> { RemoteProductRepository(get()) }

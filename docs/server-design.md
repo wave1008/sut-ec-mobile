@@ -206,7 +206,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
   - `computeOrderTotals` はクライアントでは**表示用**に残せるが、確定金額はサーバー権威（4.4）。
   - `placeOrder` は `items/totals` をクライアントから渡さず、`addressId/paymentMethodId` のみ送る形へ。
   - 各機能の ViewModel は `suspend` 化した呼び出しに追随（`viewModelScope.launch`）。
-- **C2 認証/状態**: トークン保存（まず in-memory、後で multiplatform-settings）。401 時の再ログイン誘導、通信エラー表示、リトライ。
+- **C2 認証/状態**: トークン永続化=**実装済**（`multiplatform-settings` の `Settings` で保存: Android=SharedPreferences / iOS=NSUserDefaults）。起動時に `TokenStore` が保存済みトークンを load → `RemoteAuthRepository` が `GET /me` でセッション復元（401=無効なら自動ログアウト）、cart/wishlist 等も token 購読で自動復元。**残**: 401時の再ログイン誘導・通信エラー表示・リトライ（エラーUX）。
 
 ---
 
@@ -246,6 +246,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
   - サーバー: `PORT` 環境変数(既定 8090)。`DATABASE_URL` 等も env。
   - クライアント: `gradle.properties` の `sutec.server.host.android` / `sutec.server.host.ios` / `sutec.server.port`(または `-P` / 環境変数 `SUTEC_SERVER_*`)。build 時に `composeApp` が `ServerConfigDefaults.kt` を生成し、`ServerConfig.*.kt` の `serverBaseUrl()` がそれを参照する(`build.gradle.kts` の `generateServerConfig` タスク)。ソース編集不要でポート/ホストを変更できる。
 - **既知の挙動**: カタログは公開だが cart 等は要トークン。未ログイン時はローカルキャッシュで動作し、**ログイン時にローカルのゲストカートを `/cart/merge` でサーバーへ加算マージ**（`RemoteCartRepository` が token 変化を検知して実行）。住所/支払い/注文はユーザーごと空スタート（実認証のため。モックのグローバル seed は廃止）。
+- **ログイン維持**: トークンを永続化し、アプリ再起動をまたいでログイン状態を保持（Android エミュレータで force-stop→再起動→再ログイン不要、cold start で `/me`+`/cart`+`/wishlist` 復元を確認済み）。
 
 ## 12. 未確定 / 将来
 - 実決済連携、refresh token、レート制限、全文検索、管理画面、画像のオブジェクトストレージ/CDN 配信、オフライン同梱切替。
