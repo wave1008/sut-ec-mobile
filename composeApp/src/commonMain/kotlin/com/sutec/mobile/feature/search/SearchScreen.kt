@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +30,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -85,6 +90,16 @@ fun SearchScreen(
     val lang = LocalAppLanguage.current
 
     LaunchedEffect(initialQuery) { viewModel.load(initialQuery) }
+
+    // 無限スクロール: 末尾付近まで表示されたら次ページを取得。
+    val gridState = rememberLazyGridState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            uiState.hasMore && !uiState.loadingMore && last >= uiState.results.size - 4
+        }
+    }
+    LaunchedEffect(shouldLoadMore) { if (shouldLoadMore) viewModel.loadMore() }
 
     Scaffold(
         topBar = {
@@ -162,6 +177,7 @@ fun SearchScreen(
                 )
 
                 uiState.searched -> LazyVerticalGrid(
+                    state = gridState,
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(MaterialTheme.spacing.screenH),
@@ -175,6 +191,14 @@ fun SearchScreen(
                             onClick = { onProductClick(product.id) },
                             onToggleWishlist = { viewModel.toggleWishlist(product.id) },
                         )
+                    }
+                    if (uiState.loadingMore) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Box(
+                                Modifier.fillMaxWidth().padding(MaterialTheme.spacing.md),
+                                contentAlignment = Alignment.Center,
+                            ) { CircularProgressIndicator() }
+                        }
                     }
                 }
 

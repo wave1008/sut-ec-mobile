@@ -1,5 +1,6 @@
 package com.sutec.mobile.data.repository
 
+import com.sutec.mobile.data.dto.PageResponse
 import com.sutec.mobile.data.model.Address
 import com.sutec.mobile.data.model.Category
 import com.sutec.mobile.data.model.CartItem
@@ -17,6 +18,8 @@ interface ProductRepository {
     suspend fun getCategories(): List<Category>
     suspend fun getFeatured(): List<Product>
     suspend fun getProducts(query: SearchQuery): List<Product>
+    // ページ取得(無限スクロール用)。total で残りの有無を判定する。
+    suspend fun getProductsPage(query: SearchQuery, page: Int, pageSize: Int): PageResponse<Product>
     suspend fun getProductsByCategory(categoryId: String): List<Product>
     suspend fun getProduct(id: String): Product?
     suspend fun getProductsByIds(ids: List<String>): List<Product>
