@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: sutec
+      POSTGRES_USER: sutec
+      POSTGRES_PASSWORD: sutec
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sutec"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ローカル一括起動用。開発は `./gradlew :server:run`(db だけ compose 起動)でも可。
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/sutec
+      DB_USER: sutec
+      DB_PASSWORD: sutec
+      JWT_SECRET: dev-secret-change-me
+      IMAGES_DIR: /app/mock-server/images
+    ports:
+      - "8090:8090"
+
+volumes:
+  pgdata:

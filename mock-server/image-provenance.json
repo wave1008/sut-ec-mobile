@@ -1,0 +1,991 @@
+{
+ "policy": "配信する images/ は著作権処理の対象外のみ(AI生成 / CC0・パブリックドメイン / それらの複製)。要処理画像は削除済み。",
+ "served_exempt_count": 123,
+ "served_exempt": [
+  {
+   "file": "beauty_1-1.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "United States. Food and Drug Administration",
+   "url": "https://commons.wikimedia.org/wiki/File:Notices_of_judgment_under_the_Federal_food,_drug,_and_cosmetic_act_...Drugs_and_devices_(IA_CAT11088280012).pdf",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "beauty_1-2.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "United States. Food and Drug Administration",
+   "url": "https://commons.wikimedia.org/wiki/File:Notices_of_judgment_under_the_Federal_food,_drug,_and_cosmetic_act_...Drugs_and_devices_(IA_CAT11088280024).pdf",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "beauty_1-3.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "United States. Food and Drug Administration",
+   "url": "https://commons.wikimedia.org/wiki/File:Notices_of_judgment_under_the_Federal_food,_drug,_and_cosmetic_act_...Drugs_and_devices_(IA_CAT11088280018).pdf",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "beauty_1-4.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "United States. Food and Drug Administration",
+   "url": "https://commons.wikimedia.org/wiki/File:Notices_of_judgment_under_the_Federal_food,_drug,_and_cosmetic_act_...Drugs_and_devices_(IA_CAT11088280018).pdf",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "beauty_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_3-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_3-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_3-3.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "United States. Food and Drug Administration",
+   "url": "https://commons.wikimedia.org/wiki/File:Notices_of_judgment_under_the_Federal_food,_drug,_and_cosmetic_act_...Drugs_and_devices_(IA_CAT11088280018).pdf",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "beauty_4-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_4-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "beauty_4-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_4-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_4-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "books_4-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_1-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_4-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_4-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_4-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_4-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_5-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_5-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_5-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_5-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_6-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_6-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_6-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_7-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_7-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "electronics_7-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_2-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_3-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_4-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_4-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_4-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_5-1.jpg",
+   "source": "commons",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_5-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_5-3.jpg",
+   "source": "commons",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "fashion_5-4.jpg",
+   "source": "commons",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_1-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_1-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_1-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_4-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_4-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "grocery_4-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_2-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_4-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_4-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_4-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_5-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_5-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "home_5-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_1-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_2-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_3-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_3-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_3-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_4-1.jpg",
+   "source": "commons",
+   "license": "Public domain",
+   "author": "Unknown authorUnknown author",
+   "url": "https://commons.wikimedia.org/wiki/File:Saami_Family_1900.jpg",
+   "class": "exempt-publicdomain"
+  },
+  {
+   "file": "sports_4-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "sports_4-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_1-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_1-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_1-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_1-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_2-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_2-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_2-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_2-4.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_3-1.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_3-2.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_3-3.jpg",
+   "source": "unverified",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_4-1.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_4-2.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  },
+  {
+   "file": "toys_4-3.jpg",
+   "source": "pollinations",
+   "license": "AI-generated or exempt copy",
+   "author": "",
+   "url": "",
+   "class": "exempt"
+  }
+ ],
+ "deleted_needs_clearance": "要処理97枚は images-copyright-review/ ごと削除済み(2026-07-19)。"
+}
