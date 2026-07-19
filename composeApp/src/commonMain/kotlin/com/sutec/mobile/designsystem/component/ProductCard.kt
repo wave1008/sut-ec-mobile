@@ -28,6 +28,7 @@ import com.sutec.mobile.data.model.Product
 import com.sutec.mobile.designsystem.extraColors
 import com.sutec.mobile.designsystem.spacing
 import com.sutec.mobile.i18n.LocalAppLanguage
+import com.sutec.mobile.i18n.tr
 
 @Composable
 fun ProductCard(
@@ -66,7 +67,11 @@ fun ProductCard(
             ) {
                 Icon(
                     imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = null,
+                    contentDescription = if (isWishlisted) {
+                        tr("お気に入りから削除", "Remove from wishlist")
+                    } else {
+                        tr("お気に入りに追加", "Add to wishlist")
+                    },
                     tint = if (isWishlisted) extraColors.sale else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
                 )
