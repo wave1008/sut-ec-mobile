@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
@@ -21,8 +23,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.repository.SortOption
@@ -60,6 +66,16 @@ fun CatalogScreen(
     val wishlistedIds by viewModel.wishlistedIds.collectAsStateWithLifecycle()
     val spacing = MaterialTheme.spacing
 
+    // 無限スクロール: 末尾付近で次ページを取得。
+    val gridState = rememberLazyGridState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            uiState.hasMore && !uiState.loadingMore && last >= uiState.products.size - 4
+        }
+    }
+    LaunchedEffect(shouldLoadMore) { if (shouldLoadMore) viewModel.loadMore() }
+
     Scaffold(
         topBar = {
             AppTopBar(
@@ -93,6 +109,7 @@ fun CatalogScreen(
                 else -> Column {
                     SortChipsRow(sort = uiState.sort, onSelect = viewModel::setSort)
                     LazyVerticalGrid(
+                        state = gridState,
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(spacing.screenH),
                         horizontalArrangement = Arrangement.spacedBy(spacing.md),
@@ -106,6 +123,14 @@ fun CatalogScreen(
                                 onToggleWishlist = { viewModel.toggleWishlist(product.id) },
                                 modifier = Modifier.fillMaxWidth(),
                             )
+                        }
+                        if (uiState.loadingMore) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Box(
+                                    Modifier.fillMaxWidth().padding(spacing.md),
+                                    contentAlignment = Alignment.Center,
+                                ) { CircularProgressIndicator() }
+                            }
                         }
                     }
                 }

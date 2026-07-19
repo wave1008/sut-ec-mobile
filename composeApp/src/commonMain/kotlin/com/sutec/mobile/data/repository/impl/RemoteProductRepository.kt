@@ -22,7 +22,7 @@ class RemoteProductRepository(private val api: ApiClient) : ProductRepository {
     override suspend fun getFeatured(): List<Product> =
         api.http.get("products/featured").body<List<Product>>().map(api::resolve)
 
-    override suspend fun getProducts(query: SearchQuery): List<Product> {
+    private suspend fun fetchPage(query: SearchQuery, page: Int, pageSize: Int): PageResponse<Product> {
         val resp = api.http.get("products") {
             query.text?.let { parameter("text", it) }
             query.categoryId?.let { parameter("categoryId", it) }
@@ -30,10 +30,17 @@ class RemoteProductRepository(private val api: ApiClient) : ProductRepository {
             query.maxPriceYen?.let { parameter("maxPriceYen", it) }
             query.tag?.let { parameter("tag", it.name) }
             parameter("sort", query.sort.name)
-            parameter("pageSize", 100)
+            parameter("page", page)
+            parameter("pageSize", pageSize)
         }.body<PageResponse<Product>>()
-        return resp.items.map(api::resolve)
+        return resp.copy(items = resp.items.map(api::resolve))
     }
+
+    override suspend fun getProducts(query: SearchQuery): List<Product> =
+        fetchPage(query, page = 0, pageSize = 100).items
+
+    override suspend fun getProductsPage(query: SearchQuery, page: Int, pageSize: Int): PageResponse<Product> =
+        fetchPage(query, page, pageSize)
 
     override suspend fun getProductsByCategory(categoryId: String): List<Product> =
         getProducts(SearchQuery(categoryId = categoryId))

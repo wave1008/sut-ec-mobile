@@ -187,9 +187,9 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
 
 ## 8. 構成・運用
 
-- 環境変数: `DATABASE_URL` / `DB_USER` / `DB_PASSWORD` / `JWT_SECRET` / `JWT_TTL_DAYS` / `PORT` / `IMAGES_DIR` / `CORS_ORIGINS`。
+- 環境変数: `DATABASE_URL` / `DB_USER` / `DB_PASSWORD` / `JWT_SECRET` / `JWT_TTL_DAYS` / `PORT` / `IMAGES_DIR` / `CORS_ORIGINS` / `APP_ENV` / `RATE_LIMIT_PER_MIN`。
 - ローカル DB 起動は2系統: **Apple Container**(推奨・Docker デーモン不要、`./scripts/dev-server.sh`)、または **Docker Compose**(`db`+`server`、デーモンが使える環境)。Apple Container はコンテナ毎に IP を割り当てるためスクリプトが IP から `DATABASE_URL` を組み立てる。
-- CORS: 開発は緩め、本番は許可オリジン限定。
+- **ハードニング(実装済)**: `APP_ENV=production` かつ `JWT_SECRET` が未設定/開発既定(`dev-secret-change-me`)なら**起動失敗**(`requireSecureConfig`)。`CORS_ORIGINS` 指定時はそのオリジンに限定(未指定は開発用 anyHost)。認証系(`/auth/*`,`/me`)は IP 単位で毎分 `RATE_LIMIT_PER_MIN`(既定60)に制限。
 - ロギング: `CallId` + `CallLogging`、エラーは `StatusPages` で 4.1 のエンベロープに変換。
 - ヘルスチェック: `GET /health`（DB 接続確認込み）。
 

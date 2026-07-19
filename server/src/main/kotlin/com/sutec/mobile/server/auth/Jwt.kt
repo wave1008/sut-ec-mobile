@@ -10,7 +10,9 @@ import java.util.UUID
 
 // JWT_SECRET は本番で必ず環境変数指定(既定は開発用)。uid クレームに userId(uuid) を格納。
 object Jwt {
-    private val secret = System.getenv("JWT_SECRET") ?: "dev-secret-change-me"
+    // 開発既定。本番(APP_ENV=production)でこの値のままだと起動時に失敗させる(requireSecureConfig)。
+    const val DEV_SECRET = "dev-secret-change-me"
+    private val secret = System.getenv("JWT_SECRET") ?: DEV_SECRET
     val issuer = System.getenv("JWT_ISSUER") ?: "sut-ec-mobile"
     val audience = System.getenv("JWT_AUDIENCE") ?: "sut-ec-mobile-app"
     const val realm = "sut-ec-mobile"
