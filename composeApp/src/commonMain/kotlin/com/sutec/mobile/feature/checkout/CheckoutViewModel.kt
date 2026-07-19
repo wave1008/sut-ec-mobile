@@ -10,6 +10,7 @@ import com.sutec.mobile.data.model.PaymentType
 import com.sutec.mobile.data.repository.AccountRepository
 import com.sutec.mobile.data.repository.CartRepository
 import com.sutec.mobile.data.repository.OrderRepository
+import com.sutec.mobile.util.AppMessages
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,6 +38,7 @@ class CheckoutViewModel(
     private val cartRepository: CartRepository,
     private val accountRepository: AccountRepository,
     private val orderRepository: OrderRepository,
+    private val appMessages: AppMessages,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CheckoutUiState())
     val uiState: StateFlow<CheckoutUiState> = _uiState
@@ -92,7 +94,13 @@ class CheckoutViewModel(
                     cartRepository.clear()
                     _uiState.update { it.copy(placing = false, placedOrderId = order.id) }
                 }
-                .onFailure { _uiState.update { it.copy(placing = false) } }
+                .onFailure {
+                    _uiState.update { it.copy(placing = false) }
+                    appMessages.show(
+                        "注文に失敗しました。時間をおいて再度お試しください",
+                        "Failed to place your order. Please try again.",
+                    )
+                }
         }
     }
 }

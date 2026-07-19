@@ -35,6 +35,7 @@ import com.sutec.mobile.data.model.Category
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.designsystem.component.AppFilterChip
 import com.sutec.mobile.designsystem.component.EmptyState
+import com.sutec.mobile.designsystem.component.ErrorState
 import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.component.ProductCard
 import com.sutec.mobile.designsystem.component.SearchField
@@ -150,6 +151,8 @@ fun SearchScreen(
 
             when {
                 uiState.loading -> LoadingState(Modifier.fillMaxSize())
+
+                uiState.error -> ErrorState(onRetry = viewModel::search, modifier = Modifier.fillMaxSize())
 
                 uiState.searched && uiState.results.isEmpty() -> EmptyState(
                     icon = Icons.Outlined.SearchOff,

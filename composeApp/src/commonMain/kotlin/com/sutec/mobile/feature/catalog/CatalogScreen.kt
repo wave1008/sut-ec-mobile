@@ -29,6 +29,7 @@ import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.designsystem.component.AppFilterChip
 import com.sutec.mobile.designsystem.component.AppTopBar
 import com.sutec.mobile.designsystem.component.EmptyState
+import com.sutec.mobile.designsystem.component.ErrorState
 import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.component.ProductCard
 import com.sutec.mobile.designsystem.spacing
@@ -80,6 +81,7 @@ fun CatalogScreen(
         ) {
             when {
                 uiState.loading -> LoadingState(modifier = Modifier.fillMaxSize())
+                uiState.error -> ErrorState(onRetry = viewModel::retry, modifier = Modifier.fillMaxSize())
                 uiState.products.isEmpty() -> Column {
                     SortChipsRow(sort = uiState.sort, onSelect = viewModel::setSort)
                     EmptyState(
