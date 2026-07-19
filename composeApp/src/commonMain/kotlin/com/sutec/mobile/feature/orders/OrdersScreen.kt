@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,8 @@ import com.sutec.mobile.data.model.Order
 import com.sutec.mobile.designsystem.component.AppTopBar
 import com.sutec.mobile.designsystem.component.AsyncProductImage
 import com.sutec.mobile.designsystem.component.EmptyState
+import com.sutec.mobile.designsystem.component.ErrorState
+import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.extraColors
 import com.sutec.mobile.designsystem.spacing
 import com.sutec.mobile.i18n.tr
@@ -45,26 +48,28 @@ fun OrdersScreen(
     onBack: () -> Unit,
     viewModel: OrdersViewModel = koinViewModel(),
 ) {
-    val orders by viewModel.orders.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { AppTopBar(title = tr(ja = "注文履歴", en = "Orders"), onBack = onBack) },
     ) { padding ->
-        if (orders.isEmpty()) {
-            EmptyState(
+        val content = Modifier.padding(padding)
+        when {
+            uiState.loading && uiState.orders.isEmpty() -> LoadingState(content.fillMaxSize())
+            uiState.error && uiState.orders.isEmpty() -> ErrorState(onRetry = viewModel::retry, modifier = content.fillMaxSize())
+            uiState.orders.isEmpty() -> EmptyState(
                 icon = Icons.AutoMirrored.Filled.ReceiptLong,
                 title = tr(ja = "注文履歴がありません", en = "No orders yet"),
                 actionLabel = tr(ja = "買い物を始める", en = "Start shopping"),
                 onAction = onBrowse,
-                modifier = Modifier.padding(padding),
+                modifier = content,
             )
-        } else {
-            LazyColumn(
-                modifier = Modifier.padding(padding),
+            else -> LazyColumn(
+                modifier = content,
                 contentPadding = PaddingValues(MaterialTheme.spacing.screenH),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
             ) {
-                items(orders, key = { it.id }) { order ->
+                items(uiState.orders, key = { it.id }) { order ->
                     OrderCard(order = order, onClick = { onOrderClick(order.id) })
                 }
             }

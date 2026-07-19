@@ -30,14 +30,15 @@ class RemoteOrderRepository(
     init {
         scope.launch {
             tokenStore.token.collect { token ->
-                if (token != null) refresh() else _orders.value = emptyList()
+                // 起動時の自動同期は失敗を握りつぶす(画面の明示的 refresh() が error を扱う)。
+                if (token != null) runCatching { refresh() } else _orders.value = emptyList()
             }
         }
     }
 
-    private suspend fun refresh() {
-        runCatching { api.http.get("orders").body<List<Order>>() }
-            .onSuccess { list -> _orders.value = list.map(api::resolveOrder) }
+    override suspend fun refresh() {
+        val list = api.http.get("orders").body<List<Order>>()
+        _orders.value = list.map(api::resolveOrder)
     }
 
     override suspend fun placeOrder(addressId: String, paymentMethodId: String): Order {
