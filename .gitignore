@@ -10,6 +10,9 @@ xcuserdata/
 dist/
 !gradle/wrapper/gradle-wrapper.jar
 
+# ローカルツール設定(マシン固有)
+.claude/skills/
+
 # iOS
 iosApp/Pods/
 iosApp/*.xcworkspace/xcuserdata/
