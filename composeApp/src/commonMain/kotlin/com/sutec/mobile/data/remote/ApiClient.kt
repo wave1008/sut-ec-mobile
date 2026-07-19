@@ -3,6 +3,7 @@ package com.sutec.mobile.data.remote
 import com.sutec.mobile.data.model.CartItem
 import com.sutec.mobile.data.model.Order
 import com.sutec.mobile.data.model.Product
+import com.sutec.mobile.util.AppMessages
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -17,7 +18,10 @@ import kotlinx.serialization.json.Json
 // 共有 HttpClient。エンジンはクラスパスから解決(Android=OkHttp / iOS=Darwin)。
 // defaultRequest で base(/api/v1) と Bearer(TokenStore) を毎リクエスト付与する。
 // サーバーは画像 imageUrls を相対(images/<f>.jpg)で返すため、resolve で絶対URL化して Coil に渡す。
-class ApiClient(private val tokenStore: TokenStore) {
+class ApiClient(
+    private val tokenStore: TokenStore,
+    private val appMessages: AppMessages,
+) {
     val base: String = serverBaseUrl()
 
     val http: HttpClient = HttpClient {
@@ -39,6 +43,10 @@ class ApiClient(private val tokenStore: TokenStore) {
                     !response.call.request.url.encodedPath.contains("/auth/")
                 ) {
                     tokenStore.clear()
+                    appMessages.show(
+                        "セッションが切れました。再度ログインしてください",
+                        "Your session has expired. Please log in again.",
+                    )
                 }
             }
         }
