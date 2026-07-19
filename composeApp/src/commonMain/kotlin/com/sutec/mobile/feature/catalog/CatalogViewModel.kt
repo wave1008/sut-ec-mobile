@@ -9,6 +9,7 @@ import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.SearchQuery
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.data.repository.WishlistRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 data class CatalogUiState(
     val loading: Boolean = true,
+    val error: Boolean = false,
     val category: Category? = null,
     val products: List<Product> = emptyList(),
     val sort: SortOption = SortOption.RELEVANCE,
@@ -38,19 +40,27 @@ class CatalogViewModel(
     fun load(categoryId: String?) {
         currentCategoryId = categoryId
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(loading = true)
-            val categories = productRepository.getCategories()
-            val category = categoryId?.let { id -> categories.firstOrNull { it.id == id } }
-            val products = productRepository.getProducts(
-                SearchQuery(categoryId = categoryId, sort = _uiState.value.sort),
-            )
-            _uiState.value = _uiState.value.copy(
-                loading = false,
-                category = category,
-                products = products,
-            )
+            _uiState.value = _uiState.value.copy(loading = true, error = false)
+            try {
+                val categories = productRepository.getCategories()
+                val category = categoryId?.let { id -> categories.firstOrNull { it.id == id } }
+                val products = productRepository.getProducts(
+                    SearchQuery(categoryId = categoryId, sort = _uiState.value.sort),
+                )
+                _uiState.value = _uiState.value.copy(
+                    loading = false,
+                    category = category,
+                    products = products,
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(loading = false, error = true)
+            }
         }
     }
+
+    fun retry() = load(currentCategoryId)
 
     fun setSort(sort: SortOption) {
         _uiState.value = _uiState.value.copy(sort = sort)

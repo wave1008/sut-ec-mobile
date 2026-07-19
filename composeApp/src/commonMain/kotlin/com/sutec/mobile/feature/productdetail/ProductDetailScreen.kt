@@ -52,6 +52,7 @@ import com.sutec.mobile.data.model.Review
 import com.sutec.mobile.designsystem.component.AppTopBar
 import com.sutec.mobile.designsystem.component.AsyncProductImage
 import com.sutec.mobile.designsystem.component.EmptyState
+import com.sutec.mobile.designsystem.component.ErrorState
 import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.component.PriceText
 import com.sutec.mobile.designsystem.component.PrimaryButton
@@ -147,6 +148,8 @@ fun ProductDetailScreen(
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when {
                 uiState.loading -> LoadingState(Modifier.fillMaxSize())
+
+                uiState.error -> ErrorState(onRetry = viewModel::retry, modifier = Modifier.fillMaxSize())
 
                 uiState.notFound -> EmptyState(
                     icon = Icons.Outlined.SearchOff,
