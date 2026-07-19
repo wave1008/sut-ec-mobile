@@ -13,7 +13,7 @@ import com.sutec.mobile.data.model.User
 import kotlinx.coroutines.flow.StateFlow
 
 // ===== カタログ =====
-// 全 suspend 関数は実装側で delay(200-600ms) を挟み通信を擬似する(モック方針)。
+// 実装は Remote*Repository(Ktor client で /api/v1 を呼ぶ)。公開エンドポイントで認証不要。
 interface ProductRepository {
     suspend fun getCategories(): List<Category>
     suspend fun getFeatured(): List<Product>
@@ -55,7 +55,7 @@ interface OrderRepository {
     fun getOrder(id: String): Order?
 }
 
-// ===== 認証(モック: 任意の資格情報で成功) =====
+// ===== 認証(実認証: bcrypt/JWT。login/signup は失敗時 Result.failure) =====
 interface AuthRepository {
     val currentUser: StateFlow<User?>
     suspend fun login(email: String, password: String): Result<User>

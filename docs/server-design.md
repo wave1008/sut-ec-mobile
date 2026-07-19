@@ -102,7 +102,7 @@ settings.gradle.kts:
 | GET | `/products/{id}` | 公開 | `getProduct` |
 | GET | `/products/{id}/reviews` | 公開 | `getReviews` |
 | GET | `/products/{id}/related` | 公開 | `getRelated` |
-| GET | `/products?ids=a,b,c` | 公開 | `getProductsByIds`（お気に入り一覧の解決用） |
+| GET | `/products/by-ids?ids=a,b,c` | 公開 | `getProductsByIds`（お気に入り一覧の解決用） |
 | POST | `/auth/signup` | 公開 | `AuthRepository.signup` → `TokenResponse` |
 | POST | `/auth/login` | 公開 | `AuthRepository.login` → `TokenResponse` |
 | POST | `/auth/logout` | 要 | `logout`（サーバーは no-op でも可。トークン失効を持つなら失効） |
@@ -206,7 +206,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
   - `computeOrderTotals` はクライアントでは**表示用**に残せるが、確定金額はサーバー権威（4.4）。
   - `placeOrder` は `items/totals` をクライアントから渡さず、`addressId/paymentMethodId` のみ送る形へ。
   - 各機能の ViewModel は `suspend` 化した呼び出しに追随（`viewModelScope.launch`）。
-- **C2 認証/状態**: トークン永続化=**実装済**（`multiplatform-settings` の `Settings` で保存: Android=SharedPreferences / iOS=NSUserDefaults）。起動時に `TokenStore` が保存済みトークンを load → `RemoteAuthRepository` が `GET /me` でセッション復元（401=無効なら自動ログアウト）、cart/wishlist 等も token 購読で自動復元。**401失効ハンドリング=実装済**（`ApiClient` の `HttpResponseValidator` が保護APIの 401 でトークンを破棄→`RemoteAuthRepository` が currentUser=null にしアプリ全体がログアウトに反応。`/auth/*` の 401 は除外）。**トースト通知=実装済**（`AppMessages` 通知バス→App ルートの `SnackbarHost` で現在言語表示。失効時と注文失敗時に発火）。**ロード失敗のエラー表示＋リトライ=実装済**（共通 `ErrorState`。Home/Catalog/Search/ProductDetail が loading/error/content を分岐し「再試行」で再ロード。`getProduct` は 404=notFound とネットワークエラー=retry を区別）。**残**: 注文履歴など StateFlow キャッシュ方式の画面のエラー表示（現状は自動リフレッシュ依存）。
+- **C2 認証/状態**: トークン永続化=**実装済**（`multiplatform-settings` の `Settings` で保存: Android=SharedPreferences / iOS=NSUserDefaults）。起動時に `TokenStore` が保存済みトークンを load → `RemoteAuthRepository` が `GET /me` でセッション復元（401=無効なら自動ログアウト）、cart/wishlist 等も token 購読で自動復元。**401失効ハンドリング=実装済**（`ApiClient` の `HttpResponseValidator` が保護APIの 401 でトークンを破棄→`RemoteAuthRepository` が currentUser=null にしアプリ全体がログアウトに反応。`/auth/*` の 401 は除外）。**トースト通知=実装済**（`AppMessages` 通知バス→App ルートの `SnackbarHost` で現在言語表示。失効時と注文失敗時に発火）。**ロード失敗のエラー表示＋リトライ=実装済**（共通 `ErrorState`。Home/Catalog/Search/ProductDetail/Orders が loading/error/content を分岐し「再試行」で再ロード。`getProduct` は 404=notFound とネットワークエラー=retry を区別）。**残**: cart/wishlist/account は楽観更新+背景同期方式（明示ロード工程が無いため `ErrorState` 対象外）で、失敗時はトースト通知に依存。
 
 ---
 
@@ -225,7 +225,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
 
 ## 11. 検証（Verification）
 
-- **サーバー統合テスト(実装済・`ApiIntegrationTest`)**: `ktor-server-test-host` + 実 PostgreSQL(Flyway+シード)。カタログ、認証(201/409/401/400)、カート、**注文確定の権威計算が `computeOrderTotals` と一致**、お気に入り、401ガード、404 を通し検証。DB は Testcontainers(Docker) / `TEST_DATABASE_URL`(外部DB) / 無ければ assumeTrue でスキップ、の3モード。**2026-07-19 に Apple Container の Postgres を `TEST_DATABASE_URL` に指定して全11件 PASS**。`OrderTotalsTest`(DB不要の単体)も併存。
+- **サーバー統合テスト(実装済・`ApiIntegrationTest`)**: `ktor-server-test-host` + 実 PostgreSQL(Flyway+シード)。カタログ、認証(201/409/401/400)、カート、**注文確定の権威計算が `computeOrderTotals` と一致**、お気に入り、401ガード、404 を通し検証。DB は Testcontainers(Docker) / `TEST_DATABASE_URL`(外部DB) / 無ければ assumeTrue でスキップ、の3モード。**2026-07-19 に Apple Container の Postgres を `TEST_DATABASE_URL` に指定して全12件 PASS**。`OrderTotalsTest`(DB不要の単体)も併存。
 - **契約整合**: `:shared` を両者が参照するため、レスポンス JSON がアプリのモデルへ復元可能なことを round-trip テスト。
 - **通し（アプリ×サーバー）**: 第1段階の通しシナリオ（一覧→検索→詳細→カート→チェックアウト→注文確定→履歴反映／お気に入り同期／ログイン→言語トグル／住所・支払い CRUD）を、**実サーバー起動下**で Android/iOS 両方確認。
 - **移行確認**: python 画像サーバーを停止しても、Ktor `/images` から画像取得できること。
