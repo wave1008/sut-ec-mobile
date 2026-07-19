@@ -1,5 +1,6 @@
 package com.sutec.mobile.data.repository
 
+import com.sutec.mobile.data.dto.PageResponse
 import com.sutec.mobile.data.model.Address
 import com.sutec.mobile.data.model.Category
 import com.sutec.mobile.data.model.CartItem
@@ -17,6 +18,8 @@ interface ProductRepository {
     suspend fun getCategories(): List<Category>
     suspend fun getFeatured(): List<Product>
     suspend fun getProducts(query: SearchQuery): List<Product>
+    // ページ取得(無限スクロール用)。total で残りの有無を判定する。
+    suspend fun getProductsPage(query: SearchQuery, page: Int, pageSize: Int): PageResponse<Product>
     suspend fun getProductsByCategory(categoryId: String): List<Product>
     suspend fun getProduct(id: String): Product?
     suspend fun getProductsByIds(ids: List<String>): List<Product>
@@ -45,6 +48,8 @@ interface WishlistRepository {
 // ===== 注文 =====
 interface OrderRepository {
     val orders: StateFlow<List<Order>>
+    // サーバーから注文一覧を再取得。失敗時は例外を投げる(画面側で error 表示/再試行)。
+    suspend fun refresh()
     // 金額・items・住所ラベルはサーバーがカートから権威決定する。client は選択IDのみ渡す。
     suspend fun placeOrder(addressId: String, paymentMethodId: String): Order
     fun getOrder(id: String): Order?

@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
@@ -39,7 +40,9 @@ fun Application.configureRouting() {
 
         route("/api/v1") {
             catalogRoutes()
-            authRoutes()
+            rateLimit(AuthRateLimit) {
+                authRoutes()
+            }
             authenticate("auth-jwt") {
                 cartRoutes()
                 wishlistRoutes()

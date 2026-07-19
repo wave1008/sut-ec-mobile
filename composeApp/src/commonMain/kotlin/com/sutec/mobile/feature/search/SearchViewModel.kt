@@ -31,6 +31,8 @@ data class SearchUiState(
     val sort: SortOption = SortOption.RELEVANCE,
     val results: List<Product> = emptyList(),
     val loading: Boolean = false,
+    val loadingMore: Boolean = false,
+    val hasMore: Boolean = false,
     val error: Boolean = false,
     // false の間は「未検索」表示(カテゴリ一覧等のヒント)。0件結果と区別するために必要。
     val searched: Boolean = false,
@@ -78,27 +80,59 @@ class SearchViewModel(
         search()
     }
 
+    private var page = 0
+    private var total = 0
+
+    private fun queryOf(state: SearchUiState) = SearchQuery(
+        text = state.query.trim().takeIf { it.isNotEmpty() },
+        categoryId = state.selectedCategoryId,
+        minPriceYen = state.pricePreset?.minPriceYen,
+        maxPriceYen = state.pricePreset?.maxPriceYen,
+        sort = state.sort,
+    )
+
+    // 新規検索: 先頭ページから取得し直す。
     fun search() {
+        page = 0
         val state = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(loading = true, error = false) }
             try {
-                val results = productRepository.getProducts(
-                    SearchQuery(
-                        text = state.query.trim().takeIf { it.isNotEmpty() },
-                        categoryId = state.selectedCategoryId,
-                        minPriceYen = state.pricePreset?.minPriceYen,
-                        maxPriceYen = state.pricePreset?.maxPriceYen,
-                        sort = state.sort,
-                    ),
-                )
-                _uiState.update { it.copy(results = results, loading = false, searched = true) }
+                val resp = productRepository.getProductsPage(queryOf(state), page = 0, pageSize = PAGE_SIZE)
+                total = resp.total
+                _uiState.update {
+                    it.copy(results = resp.items, loading = false, searched = true, hasMore = resp.items.size < total)
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 _uiState.update { it.copy(loading = false, error = true, searched = true) }
             }
         }
+    }
+
+    // 無限スクロール: 次ページを末尾に追加。
+    fun loadMore() {
+        val state = _uiState.value
+        if (state.loading || state.loadingMore || !state.hasMore) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(loadingMore = true) }
+            try {
+                val next = page + 1
+                val resp = productRepository.getProductsPage(queryOf(state), page = next, pageSize = PAGE_SIZE)
+                page = next
+                val merged = _uiState.value.results + resp.items
+                _uiState.update { it.copy(results = merged, loadingMore = false, hasMore = merged.size < total) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loadingMore = false) }
+            }
+        }
+    }
+
+    private companion object {
+        const val PAGE_SIZE = 12
     }
 
     fun toggleWishlist(id: String) = wishlistRepository.toggle(id)

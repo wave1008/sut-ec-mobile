@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.server.rate.limit)
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
