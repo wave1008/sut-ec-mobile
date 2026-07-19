@@ -1,0 +1,187 @@
+[
+{
+"id": "electronics_1",
+"keyword": "wireless earbuds, charging case",
+"count": 4
+},
+{
+"id": "electronics_2",
+"keyword": "flat screen smart tv, television",
+"count": 3
+},
+{
+"id": "electronics_3",
+"keyword": "mechanical keyboard, backlit keys",
+"count": 3
+},
+{
+"id": "electronics_4",
+"keyword": "portable power bank charger",
+"count": 4
+},
+{
+"id": "electronics_5",
+"keyword": "robot vacuum cleaner",
+"count": 4
+},
+{
+"id": "electronics_6",
+"keyword": "thin laptop computer, silver",
+"count": 3
+},
+{
+"id": "electronics_7",
+"keyword": "braided usb c charging cable",
+"count": 3
+},
+{
+"id": "fashion_1",
+"keyword": "mens denim jacket",
+"count": 3
+},
+{
+"id": "fashion_2",
+"keyword": "floral summer dress",
+"count": 4
+},
+{
+"id": "fashion_3",
+"keyword": "white leather sneakers",
+"count": 4
+},
+{
+"id": "fashion_4",
+"keyword": "wool scarf, knitted",
+"count": 3
+},
+{
+"id": "fashion_5",
+"keyword": "minimalist wristwatch, black leather strap",
+"count": 4
+},
+{
+"id": "home_1",
+"keyword": "ceramic kitchen knife set",
+"count": 3
+},
+{
+"id": "home_2",
+"keyword": "memory foam pillow",
+"count": 4
+},
+{
+"id": "home_3",
+"keyword": "non stick frying pan",
+"count": 3
+},
+{
+"id": "home_4",
+"keyword": "led desk lamp",
+"count": 3
+},
+{
+"id": "home_5",
+"keyword": "air purifier, home appliance",
+"count": 3
+},
+{
+"id": "beauty_1",
+"keyword": "vitamin c serum bottle, skincare",
+"count": 4
+},
+{
+"id": "beauty_2",
+"keyword": "hair dryer, white",
+"count": 3
+},
+{
+"id": "beauty_3",
+"keyword": "lip balm set, tubes",
+"count": 3
+},
+{
+"id": "beauty_4",
+"keyword": "electric facial cleansing brush",
+"count": 3
+},
+{
+"id": "books_1",
+"keyword": "mystery novel book cover, dark night scene",
+"count": 3
+},
+{
+"id": "books_2",
+"keyword": "cookbook, home cooking recipes",
+"count": 3
+},
+{
+"id": "books_3",
+"keyword": "business strategy book cover",
+"count": 3
+},
+{
+"id": "books_4",
+"keyword": "children picture book cover, cute animals",
+"count": 3
+},
+{
+"id": "sports_1",
+"keyword": "yoga mat, rolled",
+"count": 4
+},
+{
+"id": "sports_2",
+"keyword": "running shoes, athletic sneakers",
+"count": 4
+},
+{
+"id": "sports_3",
+"keyword": "adjustable dumbbell set",
+"count": 3
+},
+{
+"id": "sports_4",
+"keyword": "camping tent, outdoor",
+"count": 3
+},
+{
+"id": "grocery_1",
+"keyword": "green tea leaves, japanese sencha package",
+"count": 3
+},
+{
+"id": "grocery_2",
+"keyword": "mixed nuts, almonds walnuts",
+"count": 3
+},
+{
+"id": "grocery_3",
+"keyword": "olive oil bottle",
+"count": 3
+},
+{
+"id": "grocery_4",
+"keyword": "instant ramen noodles package",
+"count": 3
+},
+{
+"id": "toys_1",
+"keyword": "colorful building blocks toy set",
+"count": 4
+},
+{
+"id": "toys_2",
+"keyword": "off road remote control car toy",
+"count": 4
+},
+{
+"id": "toys_3",
+"keyword": "teddy bear plush toy",
+"count": 3
+},
+{
+"id": "toys_4",
+"keyword": "jigsaw puzzle box, landscape scene",
+"count": 3
+}
+]

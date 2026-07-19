@@ -1,0 +1,15 @@
+.gradle/
+build/
+**/build/
+local.properties
+.DS_Store
+.idea/
+*.iml
+.kotlin/
+xcuserdata/
+!gradle/wrapper/gradle-wrapper.jar
+
+# iOS
+iosApp/Pods/
+iosApp/*.xcworkspace/xcuserdata/
+iosApp/**/*.xcuserstate

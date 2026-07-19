@@ -1,0 +1,9 @@
+.git
+**/build
+.gradle
+.kotlin
+iosApp
+*.iml
+.idea
+.DS_Store
+mock-server/images-copyright-review
