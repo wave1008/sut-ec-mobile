@@ -5,7 +5,7 @@ import com.sutec.mobile.data.model.Product
 import com.sutec.mobile.data.model.ProductTag
 import com.sutec.mobile.data.model.Review
 
-// カタログのシード。client の MockCatalog と同一データ(画像は相対パス images/<id>-<n>.jpg)。
+// カタログのシード(画像は相対パス images/<id>-<n>.jpg)。第1段階の client MockCatalog から移植した唯一の情報源。
 // id は cart/wishlist/order の参照キーのため変更時は影響範囲を確認する。
 object CatalogSeed {
 

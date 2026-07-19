@@ -49,7 +49,9 @@ curl -s localhost:8090/api/v1/products/electronics_1
 | `JWT_SECRET` | dev-secret-change-me | **本番は必須で変更** |
 | `JWT_TTL_DAYS` | 30 | トークン有効日数 |
 | `IMAGES_DIR` | mock-server/images | 静的画像ディレクトリ |
-| `CORS`（Cors.kt） | anyHost | 開発用。本番は許可オリジンを絞る |
+| `CORS_ORIGINS` | 未指定=anyHost | カンマ区切りで許可オリジンを限定(例 `https://app.example.com`) |
+| `APP_ENV` | dev | `production` かつ `JWT_SECRET` が未設定/既定値のままだと起動失敗 |
+| `RATE_LIMIT_PER_MIN` | 60 | `/auth/*`・`/me` の IP 単位レート制限(毎分) |
 
 ## テスト
 - **単体**: `OrderTotalsTest`（`computeOrderTotals` の送料/税ルール、DB不要）。
@@ -80,5 +82,5 @@ curl -s localhost:8090/api/v1/products/electronics_1
 
 ## 注意
 - スキーマの単一情報源は Flyway(`src/main/resources/db/migration`)。Exposed の `db/Tables.kt` はこれに一致させる。
-- カタログシード `seed/CatalogSeed.kt` は client の `MockCatalog.kt` と同一データ(画像は相対パス)。片方を変えたら他方も同期。
+- カタログシード `seed/CatalogSeed.kt` がカタログの唯一の情報源(第1段階の client `MockCatalog.kt` から移植。client 側の mock は削除済み)。画像は相対パス。
 - 住所/支払い/注文はユーザー単位で空スタート(実認証のため。モックのグローバル seed は持たない)。
