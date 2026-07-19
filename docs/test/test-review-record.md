@@ -39,7 +39,9 @@
 
 ## 2. コードによる裏取り(確認済み事実)
 
-テスト文書が実装挙動に依拠している主張を該当コードで確認。いずれも**主張は正確**。
+> 本節は第1段階(モック)レビュー時点の記録。参照先(`InMemoryAuthRepository.kt`/`ImageBase*.kt`/`MockCatalog.kt`)は第2段階で削除済みのため下記リンクは無効。**現行実装の裏取りは §7 を参照**。
+
+テスト文書が実装挙動に依拠している主張を該当コードで確認。いずれも**主張は(当時)正確**。
 
 | ID | 主張(テスト文書) | 確認結果 | 根拠 |
 |---|---|---|---|
@@ -91,5 +93,34 @@
 | C5 | plan §3.3/§5.1/§7・procedures 前提/TC-160・viewpoints §7(E)・scenarios SC-160・overview-design §1.3/§7 | 画像配信の前提を「ローカル画像サーバー(:8000、Android=10.0.2.2 / iOS=127.0.0.1)」に統一訂正。TC-160 を「サーバー停止で注入(機内モードでは再現不可)」に変更。plan 開始基準に画像サーバー起動を追加。overview-design の外部CDN記述も正本 design.md に合わせ訂正。追随レビュー(2026-07-19)で追加。 |
 
 > F1(選択中削除のサイレント失敗)は**実装不具合**であり本対応では起票のみ。修正は別タスク。★ケースの合否は §5.2 の例外扱いに従う。
+
+---
+
+## 6. 第2段階(サーバー実装完了)追随レビュー(2026-07-19)
+
+第2段階の実装完了を受け、§0.1 差分表・4文書のバナーが現行実装と一致するか再点検した。対象は本記録冒頭と同じ4文書+本記録自身。コードでの裏取りは §7 参照。
+
+| ID | 区分 | 対象 | 重大度 | 指摘内容 | 対応 | 状態 |
+|---|---|---|---|---|---|---|
+| S1 | 矛盾 | plan §0.1 自動テスト件数 | 低 | `ApiIntegrationTest` の件数を「計11件」としていたが、現行コードは `@Test` 12件(`cart_merge_sums_quantities` 含む)。 | 「計12件」に修正し、カートマージのカバレッジを明記。 | 反映済み |
+| S2 | 網羅 | plan §2.2 対象外 | 中 | 「ダークテーマ」「サーバーAPI連携」「データ永続化」を対象外としたままだが、第2段階でいずれも実装済み・対象内。特にダークテーマは対象外のまま観点が一切無かった。 | §2.2 に第2段階差分の注記を追加し、ダークテーマ等の観点を viewpoints §8 に新設。 | 反映済み |
+| S3 | 矛盾 | plan §7・procedures TC-164・scenarios SC-124/164・viewpoints (E) | 高 | 「アプリ再起動でデータが初期化される」という第1段階前提が第2段階では**反転**(PostgreSQL永続+トークン永続化で再起動してもログイン状態・データが保持される)。旧文言のまま実施すると期待結果が逆になり誤判定を招く。破壊的TCの復元ガード(「再起動でシードへ復元」)も第2段階では機能しない。 | plan §7 のリスク行・復元ガード手順を第2段階版に置換(専用テストアカウント運用+DBコンテナ再作成による全体リセット手順を明記)。procedures TC-164・scenarios SC-124/164・viewpoints (E) に期待結果反転の注記を追加。 | 反映済み |
+| S4 | 矛盾 | procedures TC-160・scenarios SC-160・viewpoints (E) | 中 | 画像取得失敗の注入法「画像専用サーバー:8000を停止」は第2段階で無効。画像もカタログも同一 `:server` から配信されるため、サーバー停止は画像以外の機能も同時に失敗させ、TCの意図(画像以外は継続動作)を検証できない。 | `IMAGES_DIR` に存在しないパスを指定して `:server` を起動する方法(画像のみ404、他APIは正常)に置換。`:server` 全停止のケースは新設のロード失敗+ErrorState/再試行観点に読み替え。 | 反映済み |
+| S5 | 網羅 | viewpoints | 中 | 第2段階で新規実装されたクライアント機能(トークン永続化・401自動ログアウト・ゲストカート統合・ロード失敗のErrorState+再試行・無限スクロール・ダークテーマ)とサーバーハードニング(JWT_SECRET fail-fast・CORS許可制・認証レート制限)の観点が文書群のどこにも無かった。 | viewpoints に新設(§8 テキスト版+マインドマップに「第2段階追加機能」ブランチ)。 | 反映済み |
+| S6 | 網羅 | plan §0.1 前提環境 | 低 | 「python画像サーバー:8000→:server」の記述はあるが、画像配信が `:server` の `/images` に統合された旨(python画像サーバーの完全廃止)が明示されていなかった。 | §0.1 前提環境行に「画像も `:server` の `/images` 配信に統合(python画像サーバー:8000は廃止)」を明記。 | 反映済み |
+
+### 7. コードによる裏取り(第2段階再確認)
+
+| 主張 | 確認結果 | 根拠 |
+|---|---|---|
+| 既定ポートは 8090 | **確認済**。`PORT` 環境変数未設定時のデフォルト。 | [Application.kt:10](../../server/src/main/kotlin/com/sutec/mobile/server/Application.kt#L10) |
+| 画像は `:server` の `/images` から配信(python:8000は廃止) | **確認済**。`IMAGES_DIR` が有効なディレクトリの場合のみ `/images` に `staticFiles` 登録。 | [Routing.kt:22-27](../../server/src/main/kotlin/com/sutec/mobile/server/Routing.kt#L22-L27) |
+| 認証は実認証(重複=409/誤PW=401/空欄=400) | **確認済**(統合テスト `signup_login_and_errors` で検証)。 | [ApiIntegrationTest.kt:153](../../server/src/test/kotlin/com/sutec/mobile/server/ApiIntegrationTest.kt#L153) |
+| `ApiIntegrationTest` は12件 | **確認済**。`@Test` 12個(health_ok/categories_seeded/featured_returns_twelve/product_detail_and_404/search_filters_and_paginates/reviews_related_byIds/cart_requires_auth/signup_login_and_errors/cart_and_place_order/empty_cart_order_is_rejected/cart_merge_sums_quantities/wishlist_add_list_remove)。 | [ApiIntegrationTest.kt](../../server/src/test/kotlin/com/sutec/mobile/server/ApiIntegrationTest.kt) |
+| トークン永続化・401自動ログアウト・ゲストカート統合・ErrorState+再試行・無限スクロール(pageSize12)・ダークテーマ・JWT_SECRET fail-fast・CORS許可制・認証レート制限(既定60) | **すべて確認済**(実装済み)。 | `TokenStore.kt` / `ApiClient.kt:40-51` / `RemoteCartRepository.kt:45-67`+`UserDataRoutes.kt:28` / `StateViews.kt:27-38` / `CatalogViewModel.kt:107`+`SearchViewModel.kt:135` / `Theme.kt:11-16` / `Application.kt:27-35` / `Cors.kt:9-20` / `RateLimit.kt:9-20` |
+
+> 本追随レビューは §0.1 差分表・4文書のバナーの正確性を再点検するもので、§1〜5(第1段階時点の指摘)とは独立管理。
+
+
 </content>
 </invoke>
