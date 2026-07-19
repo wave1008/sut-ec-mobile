@@ -1,16 +1,29 @@
 package com.sutec.mobile.data.remote
 
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-// JWT の唯一の保持先。ApiClient が付与、AuthRepository が set/clear、
-// cart/wishlist/orders/account の Remote 実装が変化を購読して再取得/クリアする。
-// 永続化なし(プロセス終了で消える。将来 multiplatform-settings で永続化)。
-class TokenStore {
-    private val _token = MutableStateFlow<String?>(null)
+// JWT の唯一の保持先。Settings(Android=SharedPreferences / iOS=NSUserDefaults)で永続化し、
+// 起動時に復元する。初期値に保存済みトークンを載せるため、購読する Remote 実装は起動時に
+// そのトークンで自分のデータを復元できる。AuthRepository が set/clear、ApiClient が付与。
+class TokenStore(private val settings: Settings) {
+    private val _token = MutableStateFlow(settings.getStringOrNull(KEY))
     val token: StateFlow<String?> = _token
 
-    fun set(value: String) { _token.value = value }
-    fun clear() { _token.value = null }
+    fun set(value: String) {
+        settings.putString(KEY, value)
+        _token.value = value
+    }
+
+    fun clear() {
+        settings.remove(KEY)
+        _token.value = null
+    }
+
     fun current(): String? = _token.value
+
+    private companion object {
+        const val KEY = "auth_token"
+    }
 }
