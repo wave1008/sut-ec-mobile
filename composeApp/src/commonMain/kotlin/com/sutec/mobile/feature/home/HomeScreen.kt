@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.model.Category
+import com.sutec.mobile.designsystem.component.ErrorState
 import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.component.ProductCard
 import com.sutec.mobile.designsystem.component.SearchField
@@ -54,6 +55,10 @@ fun HomeScreen(
 
     if (uiState.loading) {
         LoadingState(modifier = Modifier.fillMaxSize())
+        return
+    }
+    if (uiState.error) {
+        ErrorState(onRetry = viewModel::retry, modifier = Modifier.fillMaxSize())
         return
     }
 

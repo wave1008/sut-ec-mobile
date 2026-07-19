@@ -7,6 +7,7 @@ import com.sutec.mobile.data.model.Review
 import com.sutec.mobile.data.repository.CartRepository
 import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.WishlistRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 data class ProductDetailUiState(
     val loading: Boolean = true,
+    val error: Boolean = false,
     val product: Product? = null,
     val reviews: List<Review> = emptyList(),
     val related: List<Product> = emptyList(),
@@ -33,27 +35,40 @@ class ProductDetailViewModel(
 
     val wishlistedIds: StateFlow<Set<String>> = wishlistRepository.productIds
 
+    private var currentProductId: String? = null
+
     fun load(productId: String) {
+        currentProductId = productId
         viewModelScope.launch {
             _uiState.update { ProductDetailUiState(loading = true) }
-            val product = productRepository.getProduct(productId)
-            if (product == null) {
-                _uiState.update { it.copy(loading = false, notFound = true) }
-                return@launch
-            }
-            val reviews = productRepository.getReviews(productId)
-            val related = productRepository.getRelated(productId)
-            _uiState.update {
-                it.copy(
-                    loading = false,
-                    product = product,
-                    reviews = reviews,
-                    related = related,
-                    quantity = 1,
-                    notFound = false,
-                )
+            try {
+                val product = productRepository.getProduct(productId)
+                if (product == null) {
+                    _uiState.update { it.copy(loading = false, notFound = true) }
+                    return@launch
+                }
+                val reviews = productRepository.getReviews(productId)
+                val related = productRepository.getRelated(productId)
+                _uiState.update {
+                    it.copy(
+                        loading = false,
+                        product = product,
+                        reviews = reviews,
+                        related = related,
+                        quantity = 1,
+                        notFound = false,
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loading = false, error = true) }
             }
         }
+    }
+
+    fun retry() {
+        currentProductId?.let { load(it) }
     }
 
     fun setQuantity(quantity: Int) {

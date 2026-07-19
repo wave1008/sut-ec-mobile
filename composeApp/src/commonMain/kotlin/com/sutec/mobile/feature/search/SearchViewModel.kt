@@ -9,6 +9,7 @@ import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.SearchQuery
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.data.repository.WishlistRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +31,7 @@ data class SearchUiState(
     val sort: SortOption = SortOption.RELEVANCE,
     val results: List<Product> = emptyList(),
     val loading: Boolean = false,
+    val error: Boolean = false,
     // false の間は「未検索」表示(カテゴリ一覧等のヒント)。0件結果と区別するために必要。
     val searched: Boolean = false,
     val categories: List<Category> = emptyList(),
@@ -79,17 +81,23 @@ class SearchViewModel(
     fun search() {
         val state = _uiState.value
         viewModelScope.launch {
-            _uiState.update { it.copy(loading = true) }
-            val results = productRepository.getProducts(
-                SearchQuery(
-                    text = state.query.trim().takeIf { it.isNotEmpty() },
-                    categoryId = state.selectedCategoryId,
-                    minPriceYen = state.pricePreset?.minPriceYen,
-                    maxPriceYen = state.pricePreset?.maxPriceYen,
-                    sort = state.sort,
-                ),
-            )
-            _uiState.update { it.copy(results = results, loading = false, searched = true) }
+            _uiState.update { it.copy(loading = true, error = false) }
+            try {
+                val results = productRepository.getProducts(
+                    SearchQuery(
+                        text = state.query.trim().takeIf { it.isNotEmpty() },
+                        categoryId = state.selectedCategoryId,
+                        minPriceYen = state.pricePreset?.minPriceYen,
+                        maxPriceYen = state.pricePreset?.maxPriceYen,
+                        sort = state.sort,
+                    ),
+                )
+                _uiState.update { it.copy(results = results, loading = false, searched = true) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loading = false, error = true, searched = true) }
+            }
         }
     }
 

@@ -206,7 +206,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
   - `computeOrderTotals` はクライアントでは**表示用**に残せるが、確定金額はサーバー権威（4.4）。
   - `placeOrder` は `items/totals` をクライアントから渡さず、`addressId/paymentMethodId` のみ送る形へ。
   - 各機能の ViewModel は `suspend` 化した呼び出しに追随（`viewModelScope.launch`）。
-- **C2 認証/状態**: トークン永続化=**実装済**（`multiplatform-settings` の `Settings` で保存: Android=SharedPreferences / iOS=NSUserDefaults）。起動時に `TokenStore` が保存済みトークンを load → `RemoteAuthRepository` が `GET /me` でセッション復元（401=無効なら自動ログアウト）、cart/wishlist 等も token 購読で自動復元。**401失効ハンドリング=実装済**（`ApiClient` の `HttpResponseValidator` が保護APIの 401 でトークンを破棄→`RemoteAuthRepository` が currentUser=null にしアプリ全体がログアウトに反応。`/auth/*` の 401 は除外）。**残**: 失効の通知トースト・通信エラー表示・失敗リトライ。
+- **C2 認証/状態**: トークン永続化=**実装済**（`multiplatform-settings` の `Settings` で保存: Android=SharedPreferences / iOS=NSUserDefaults）。起動時に `TokenStore` が保存済みトークンを load → `RemoteAuthRepository` が `GET /me` でセッション復元（401=無効なら自動ログアウト）、cart/wishlist 等も token 購読で自動復元。**401失効ハンドリング=実装済**（`ApiClient` の `HttpResponseValidator` が保護APIの 401 でトークンを破棄→`RemoteAuthRepository` が currentUser=null にしアプリ全体がログアウトに反応。`/auth/*` の 401 は除外）。**トースト通知=実装済**（`AppMessages` 通知バス→App ルートの `SnackbarHost` で現在言語表示。失効時と注文失敗時に発火）。**ロード失敗のエラー表示＋リトライ=実装済**（共通 `ErrorState`。Home/Catalog/Search/ProductDetail が loading/error/content を分岐し「再試行」で再ロード。`getProduct` は 404=notFound とネットワークエラー=retry を区別）。**残**: 注文履歴など StateFlow キャッシュ方式の画面のエラー表示（現状は自動リフレッシュ依存）。
 
 ---
 
