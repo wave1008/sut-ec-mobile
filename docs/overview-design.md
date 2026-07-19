@@ -25,7 +25,7 @@
 Amazon 風の EC 買い物アプリを **Compose Multiplatform** で構築し、**iOS / Android の両方**で同一の UI・ロジックを提供する。買い物〜アカウント管理までの主要 10 機能を、画面遷移・カート操作・チェックアウトまで通しで動作させる。
 
 ### 1.2 スコープ
-本段階(モックアップ第1段階)の範囲は以下のとおり。
+第1段階(モックアップ)・第2段階(サーバー実装)とも完了。範囲は以下のとおり。
 
 | 区分 | 内容 |
 |---|---|
@@ -44,26 +44,36 @@ Amazon 風の EC 買い物アプリを **Compose Multiplatform** で構築し、
 
 ## 2. システム構成
 
-### 2.1 アーキテクチャ方式
-- **単一 `composeApp` モジュール**（JetBrains KMP 方式）の commonMain にロジックと UI を集約し、androidMain / iosMain は各プラットフォームのエントリと HTTP エンジンのみを持つ。
-- **UI(Compose) → ViewModel(StateFlow) → Repository(インメモリ)** の単方向データフロー。画面横断で共有すべき状態(カート・お気に入り・認証・住所/支払い)は Repository が `StateFlow` で保持し、全画面が購読する。
-- 依存解決は **Koin** による DI。将来のサーバー実装にも同構成を流用する。
+### 2.1 アーキテクチャ方式（現行 = 第2段階）
+- **3モジュール構成**: `composeApp`(KMP アプリ本体。commonMain にロジック/UI を集約し androidMain / iosMain は各プラットフォームのエントリと HTTP エンジンのみ) / **`:shared`**(モデル・`Totals`・`SearchQuery`・`AppLanguage`・DTO をクライアント/サーバー間で共有) / **`:server`**(Ktor サーバー)。
+- **UI(Compose) → ViewModel(StateFlow) → Repository(`Remote*`)** の単方向データフロー。`Remote*Repository` が Ktor client で `:server` の `/api/v1` を呼び、結果をローカル `StateFlow` にキャッシュして全画面へ配信する（カート/お気に入り等の変更系は楽観更新 + 背景同期）。
+- 依存解決は **Koin** による DI。
 
 ```
-┌──────────── commonMain ────────────┐
-│  UI (Compose Screens)              │
-│        ↓ 状態購読 / イベント        │
-│  ViewModel (androidx.lifecycle)    │  ← StateFlow で UI 状態を公開
-│        ↓ 呼び出し                   │
-│  Repository (interface)            │  ← インメモリ実装 + StateFlow
-│        ↓                            │
-│  Model (@Serializable) / MockCatalog(シード)
-└─────────────────────────────────────┘
+┌──────── :server (Ktor3+Netty) ────────┐
+│  routes → service/repository → Exposed → PostgreSQL │
+│  /api/v1(catalog, auth, cart, wishlist, orders,      │
+│          addresses, payment-methods) / 静的 /images  │
+└───────────────────↑ HTTP(JSON) ──────────────────────┘
+                     │
+┌──────────── composeApp: commonMain ───────────────────┐
+│  UI (Compose Screens)                                 │
+│        ↓ 状態購読 / イベント                            │
+│  ViewModel (androidx.lifecycle)                       │  ← StateFlow で UI 状態を公開
+│        ↓ 呼び出し                                       │
+│  Repository (interface, :shared のモデルに依存)          │
+│        ↓ 実装                                          │
+│  Remote*Repository (data/repository/impl)             │  ← Ktor client + StateFlow キャッシュ
+│        ↓ 使用                                          │
+│  ApiClient / TokenStore (data/remote)                 │
+└─────────────────────────────────────────────────────────┘
    ↑ Koin(DI) が全レイヤを結線
-androidMain: MainActivity / Ktor(OkHttp)
-iosMain    : MainViewController / Ktor(Darwin)
+androidMain: MainActivity / Ktor(OkHttp) / ServerConfig=10.0.2.2:8090
+iosMain    : MainViewController / Ktor(Darwin) / ServerConfig=127.0.0.1:8090
 iosApp     : Xcode プロジェクト(SwiftUI が ComposeUIViewController をホスト)
 ```
+
+第1段階(モック)は `composeApp` 単一モジュールで、Repository はインメモリ実装 + `MockCatalog` シードだった（サーバー層なし）。第2段階で `:shared`/`:server` を新設し上記へ置換。
 
 ### 2.2 技術スタック(要点)
 
@@ -76,7 +86,7 @@ iosApp     : Xcode プロジェクト(SwiftUI が ComposeUIViewController をホ
 | DI | Koin 4.x |
 | 画像 | Coil 3(+ Ktor エンジン: Android=OkHttp / iOS=Darwin) |
 | シリアライズ | kotlinx-serialization(ナビ引数・モデル) |
-| 国際化 | 自前 `LocalStrings`（CompositionLocal + 実行時トグル） |
+| 国際化 | 自前 `tr(ja, en)`(呼び出し側インライン) + `LocalAppLanguage`(CompositionLocal) + `LocaleController`(実行時トグル) |
 
 > 詳細な選定理由・バージョン・ディレクトリ構成は [design.md](design.md) を参照。
 
@@ -156,7 +166,7 @@ flowchart TD
 ## 5. データ設計概要
 
 ### 5.1 主要エンティティ
-すべて `@Serializable`（将来の API/JSON 流用を想定）。金額は**円の整数**（minor unit なし）。文言は日英を両持ちし `name(lang)` 等で解決。
+すべて `@Serializable`（`:shared` で client/server 間の API JSON にそのまま流用）。金額は**円の整数**（minor unit なし）。文言は日英を両持ちし `name(lang)` 等で解決。
 
 | エンティティ | 主なフィールド | 備考 |
 |---|---|---|
@@ -168,7 +178,7 @@ flowchart TD
 | **OrderTotals** | subtotalYen, shippingYen, taxYen | `totalYen` は合算 |
 | **Order** | id, items[](スナップショット), totals, status, placedAt, shippingAddress, paymentLabel | 確定後はカート変更の影響を受けない |
 | **OrderStatus** | PROCESSING / SHIPPED / DELIVERED / CANCELLED | |
-| **User** | id, name, email | モック |
+| **User** | id, name, email | サーバー採番。パスワードはハッシュのみサーバー側保持(このモデルには含まれない) |
 | **Address** | id, fullName, postalCode, prefecture, city, line1, line2?, phone, isDefault | |
 | **PaymentMethod** | id, type, brand/last4/holderName/exp(CARD 時のみ), isDefault | |
 | **PaymentType** | CARD / CASH_ON_DELIVERY | |
@@ -188,10 +198,8 @@ erDiagram
 ```
 
 ### 5.3 データ保持方針
-- カタログ(商品・カテゴリ・レビュー)は `MockCatalog` のシード（読み取り専用）。
-- カート・お気に入り・認証セッション・住所/支払いは各 Repository が **`StateFlow` でインメモリ保持**し、画面横断で共有・即時同期。
-- ID はインメモリのカウンタで採番。永続化しない。
-- **第2段階**: 上記は PostgreSQL 永続・ユーザー単位に置換（`MockCatalog` はサーバーのシードへ移植）。ID はサーバー採番。詳細は [server-design.md](server-design.md) §5。
+- **第1段階(歴史)**: カタログは `MockCatalog` のシード（読み取り専用）。カート・お気に入り・認証セッション・住所/支払いは各 Repository が `StateFlow` でインメモリ保持。ID はインメモリのカウンタで採番、永続化しない。
+- **第2段階(現行)**: 上記は **PostgreSQL 永続・ユーザー単位**に置換（`MockCatalog` はサーバー起動時シード `CatalogSeed` へ移植）。ID はサーバー採番。client の `Remote*Repository` はサーバーの値を `StateFlow` にキャッシュし画面横断で共有・即時同期する。詳細は [server-design.md](server-design.md) §5。
 
 ---
 
