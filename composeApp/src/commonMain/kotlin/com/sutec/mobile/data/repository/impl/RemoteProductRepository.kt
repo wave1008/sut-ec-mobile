@@ -10,6 +10,8 @@ import com.sutec.mobile.data.repository.SearchQuery
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
 
 // カタログは公開エンドポイント(認証不要)。imageUrls はサーバー相対 → resolve で絶対URL化。
 class RemoteProductRepository(private val api: ApiClient) : ProductRepository {
@@ -36,8 +38,13 @@ class RemoteProductRepository(private val api: ApiClient) : ProductRepository {
     override suspend fun getProductsByCategory(categoryId: String): List<Product> =
         getProducts(SearchQuery(categoryId = categoryId))
 
-    override suspend fun getProduct(id: String): Product? =
-        runCatching { api.http.get("products/$id").body<Product>() }.getOrNull()?.let(api::resolve)
+    // 404 は null(商品なし)。ネットワーク/その他エラーは例外を伝播し、画面側で再試行できるようにする。
+    override suspend fun getProduct(id: String): Product? {
+        val resp = api.http.get("products/$id")
+        if (resp.status == HttpStatusCode.NotFound) return null
+        check(resp.status.isSuccess()) { "getProduct failed: ${resp.status}" }
+        return api.resolve(resp.body<Product>())
+    }
 
     override suspend fun getProductsByIds(ids: List<String>): List<Product> {
         if (ids.isEmpty()) return emptyList()
