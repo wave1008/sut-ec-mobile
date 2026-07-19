@@ -4,10 +4,12 @@ import com.sutec.mobile.data.model.CartItem
 import com.sutec.mobile.data.model.Order
 import com.sutec.mobile.data.model.Product
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.bearerAuth
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -27,6 +29,18 @@ class ApiClient(private val tokenStore: TokenStore) {
             url("$base/api/v1/")
             contentType(ContentType.Application.Json)
             tokenStore.current()?.let { bearerAuth(it) }
+        }
+        // セッション失効の集約処理: 保護APIが 401 を返したらトークンを破棄する。
+        // (これを購読する AuthRepository が currentUser=null にし、アプリ全体がログアウトに反応)
+        // /auth/* の 401(資格情報ミス)は既存セッションと無関係なので除外する。
+        HttpResponseValidator {
+            validateResponse { response ->
+                if (response.status == HttpStatusCode.Unauthorized &&
+                    !response.call.request.url.encodedPath.contains("/auth/")
+                ) {
+                    tokenStore.clear()
+                }
+            }
         }
     }
 

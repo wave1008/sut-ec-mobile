@@ -56,7 +56,7 @@ fun LoginScreen(
         ) {
             Spacer(Modifier.height(spacing.lg))
             Text(
-                text = tr("任意の情報でログインできます（デモ）", "Any credentials work (demo)"),
+                text = tr("登録済みのメールアドレスとパスワードでログイン", "Log in with your registered email and password"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.extraColors.onSurfaceFaint,
             )
