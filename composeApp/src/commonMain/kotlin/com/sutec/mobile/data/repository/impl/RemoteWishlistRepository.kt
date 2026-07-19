@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 // toggle/remove は楽観更新 + 背景同期。token が入るとサーバーから再取得。
 class RemoteWishlistRepository(
     private val api: ApiClient,
-    tokenStore: TokenStore,
+    private val tokenStore: TokenStore,
 ) : WishlistRepository {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -37,16 +37,22 @@ class RemoteWishlistRepository(
         runCatching { api.http.get("wishlist").body<List<String>>() }.onSuccess { _ids.value = it.toSet() }
     }
 
+    // ゲスト(token 無し)はサーバー同期しない(保護APIは401になるだけ)。ログイン時の refresh で上書き。
+    private fun sync(block: suspend () -> Unit) {
+        if (tokenStore.current() == null) return
+        scope.launch { block() }
+    }
+
     override fun toggle(productId: String) {
         val current = _ids.value
         if (productId in current) {
             _ids.value = current - productId
-            scope.launch {
+            sync {
                 runCatching { api.http.delete("wishlist/$productId").body<List<String>>() }.onSuccess { _ids.value = it.toSet() }
             }
         } else {
             _ids.value = current + productId
-            scope.launch {
+            sync {
                 runCatching { api.http.put("wishlist/$productId").body<List<String>>() }.onSuccess { _ids.value = it.toSet() }
             }
         }
@@ -54,7 +60,7 @@ class RemoteWishlistRepository(
 
     override fun remove(productId: String) {
         _ids.value = _ids.value - productId
-        scope.launch {
+        sync {
             runCatching { api.http.delete("wishlist/$productId").body<List<String>>() }.onSuccess { _ids.value = it.toSet() }
         }
     }

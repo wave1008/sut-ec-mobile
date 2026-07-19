@@ -10,6 +10,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.bearerAuth
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -36,10 +37,12 @@ class ApiClient(
         }
         // セッション失効の集約処理: 保護APIが 401 を返したらトークンを破棄する。
         // (これを購読する AuthRepository が currentUser=null にし、アプリ全体がログアウトに反応)
-        // /auth/* の 401(資格情報ミス)は既存セッションと無関係なので除外する。
+        // 除外2つ: /auth/* の 401(資格情報ミス)と、Authorization 無しの 401(ゲスト操作。
+        // セッションが存在しないので「失効」扱いにするとゲスト操作のたびに誤トーストが出る)。
         HttpResponseValidator {
             validateResponse { response ->
                 if (response.status == HttpStatusCode.Unauthorized &&
+                    response.call.request.headers.contains(HttpHeaders.Authorization) &&
                     !response.call.request.url.encodedPath.contains("/auth/")
                 ) {
                     tokenStore.clear()
