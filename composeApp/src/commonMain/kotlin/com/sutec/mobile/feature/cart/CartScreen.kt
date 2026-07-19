@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -149,10 +150,10 @@ private fun CartItemRow(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-                IconButton(onClick = onRemove, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onRemove, modifier = Modifier.size(32.dp).testTag("btn_remove_item")) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = null,
+                        contentDescription = tr("削除", "Remove"),
                         tint = MaterialTheme.extraColors.onSurfaceFaint,
                     )
                 }

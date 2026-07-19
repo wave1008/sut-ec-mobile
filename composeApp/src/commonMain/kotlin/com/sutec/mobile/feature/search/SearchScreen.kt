@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.model.Category
 import com.sutec.mobile.data.repository.SortOption
@@ -109,8 +110,8 @@ fun SearchScreen(
                     .padding(horizontal = MaterialTheme.spacing.sm, vertical = MaterialTheme.spacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                IconButton(onClick = onBack, modifier = Modifier.testTag("btn_back")) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("戻る", "Back"))
                 }
                 SearchField(
                     value = uiState.query,

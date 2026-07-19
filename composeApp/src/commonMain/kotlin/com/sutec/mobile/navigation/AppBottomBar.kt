@@ -20,7 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -74,6 +76,7 @@ fun AppBottomBar(navController: NavController, currentDestination: NavDestinatio
             val selected = currentDestination?.hasRoute(tab.matchClass()) == true
             NavigationBarItem(
                 selected = selected,
+                modifier = Modifier.testTag("tab_${tab.name.lowercase()}"),
                 onClick = {
                     if (!selected) {
                         navController.navigate(tab.route) {
