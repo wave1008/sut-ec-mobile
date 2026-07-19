@@ -11,6 +11,10 @@ data class CartDto(val items: List<CartItem>, val totals: OrderTotals)
 @Serializable
 data class AddCartItemRequest(val productId: String, val quantity: Int = 1)
 
+// ゲストカート統合。未ログイン時のローカルカートをログイン時にサーバーへ加算マージする。
+@Serializable
+data class MergeCartRequest(val items: List<AddCartItemRequest>)
+
 @Serializable
 data class SetQuantityRequest(val quantity: Int)
 
