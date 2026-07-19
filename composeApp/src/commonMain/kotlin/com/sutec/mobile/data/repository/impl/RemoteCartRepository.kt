@@ -2,6 +2,7 @@ package com.sutec.mobile.data.repository.impl
 
 import com.sutec.mobile.data.dto.AddCartItemRequest
 import com.sutec.mobile.data.dto.CartDto
+import com.sutec.mobile.data.dto.MergeCartRequest
 import com.sutec.mobile.data.dto.SetQuantityRequest
 import com.sutec.mobile.data.model.CartItem
 import com.sutec.mobile.data.model.OrderTotals
@@ -44,13 +45,25 @@ class RemoteCartRepository(
     init {
         scope.launch {
             tokenStore.token.collect { token ->
-                if (token != null) refresh() else applyLocal(emptyList())
+                when {
+                    // ログイン: ローカルのゲストカートがあればサーバーへマージ(加算)、無ければ取得。
+                    token != null && _items.value.isNotEmpty() -> mergeGuest(_items.value)
+                    token != null -> refresh()
+                    else -> applyLocal(emptyList())
+                }
             }
         }
     }
 
     private suspend fun refresh() {
         runCatching { api.http.get("cart").body<CartDto>() }.onSuccess { applyDto(it) }
+    }
+
+    private suspend fun mergeGuest(guest: List<CartItem>) {
+        val body = MergeCartRequest(guest.map { AddCartItemRequest(it.product.id, it.quantity) })
+        runCatching { api.http.post("cart/merge") { setBody(body) }.body<CartDto>() }
+            .onSuccess { applyDto(it) }
+            .onFailure { refresh() }
     }
 
     private fun applyDto(dto: CartDto) = applyLocal(api.resolveItems(dto.items))

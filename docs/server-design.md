@@ -109,6 +109,7 @@ settings.gradle.kts:
 | GET | `/me` | 要 | 現在ユーザー（`currentUser` 相当） |
 | GET | `/cart` | 要 | `CartRepository.items/totals` |
 | POST | `/cart/items` | 要 | `add(productId, quantity)` |
+| POST | `/cart/merge` | 要 | ゲストカート統合。`{items:[{productId,quantity}]}` を加算マージ |
 | PATCH | `/cart/items/{productId}` | 要 | `setQuantity`（0 以下で削除） |
 | DELETE | `/cart/items/{productId}` | 要 | `remove` |
 | DELETE | `/cart` | 要 | `clear` |
@@ -244,7 +245,7 @@ Flyway の `V1__init.sql` で作成し、Exposed の Table 定義はこれに一
 - **接続先はハードコードせず設定可能**(既定 8090。8080 は Apache 等と衝突しやすいため回避)。
   - サーバー: `PORT` 環境変数(既定 8090)。`DATABASE_URL` 等も env。
   - クライアント: `gradle.properties` の `sutec.server.host.android` / `sutec.server.host.ios` / `sutec.server.port`(または `-P` / 環境変数 `SUTEC_SERVER_*`)。build 時に `composeApp` が `ServerConfigDefaults.kt` を生成し、`ServerConfig.*.kt` の `serverBaseUrl()` がそれを参照する(`build.gradle.kts` の `generateServerConfig` タスク)。ソース編集不要でポート/ホストを変更できる。
-- **既知の挙動**: カタログは公開だが cart 等は要トークン。未ログイン時はローカルキャッシュのみで動作し、ログイン時にサーバーの内容へ置換（ゲストカートのサーバー統合は未実装）。住所/支払い/注文はユーザーごと空スタート（実認証のため。モックのグローバル seed は廃止）。
+- **既知の挙動**: カタログは公開だが cart 等は要トークン。未ログイン時はローカルキャッシュで動作し、**ログイン時にローカルのゲストカートを `/cart/merge` でサーバーへ加算マージ**（`RemoteCartRepository` が token 変化を検知して実行）。住所/支払い/注文はユーザーごと空スタート（実認証のため。モックのグローバル seed は廃止）。
 
 ## 12. 未確定 / 将来
 - 実決済連携、refresh token、レート制限、全文検索、管理画面、画像のオブジェクトストレージ/CDN 配信、オフライン同梱切替。
