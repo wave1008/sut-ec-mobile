@@ -103,6 +103,7 @@ fun SearchScreen(
     LaunchedEffect(shouldLoadMore) { if (shouldLoadMore) viewModel.loadMore() }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_search"),
         topBar = {
             Row(
                 modifier = Modifier
@@ -116,7 +117,7 @@ fun SearchScreen(
                 SearchField(
                     value = uiState.query,
                     onValueChange = viewModel::onQueryChange,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag("field_search"),
                     placeholder = tr("商品を検索", "Search products"),
                     onSearch = { viewModel.search() },
                     onClear = {
@@ -145,6 +146,7 @@ fun SearchScreen(
                         selected = selected,
                         label = category.name(lang),
                         onClick = { viewModel.setCategory(if (selected) null else category.id) },
+                        modifier = Modifier.testTag("chip_category_${category.id}"),
                     )
                 }
                 PricePreset.entries.forEach { preset ->
@@ -153,6 +155,7 @@ fun SearchScreen(
                         selected = selected,
                         label = pricePresetLabel(preset),
                         onClick = { viewModel.setPricePreset(if (selected) null else preset) },
+                        modifier = Modifier.testTag("chip_price_${preset.name.lowercase()}"),
                     )
                 }
                 AppFilterChip(
@@ -162,6 +165,7 @@ fun SearchScreen(
                         val nextIndex = (sortCycle.indexOf(uiState.sort) + 1) % sortCycle.size
                         viewModel.setSort(sortCycle[nextIndex])
                     },
+                    modifier = Modifier.testTag("chip_sort"),
                 )
             }
 

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sutec.mobile.designsystem.extraColors
@@ -26,6 +27,7 @@ fun EmptyState(
     message: String? = null,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
+    actionTestTag: String? = null,
 ) {
     Column(
         modifier = modifier
@@ -56,7 +58,12 @@ fun EmptyState(
         }
         if (actionLabel != null && onAction != null) {
             Spacer(Modifier.height(MaterialTheme.spacing.lg))
-            PrimaryButton(text = actionLabel, onClick = onAction, fillMaxWidth = false)
+            PrimaryButton(
+                text = actionLabel,
+                onClick = onAction,
+                modifier = if (actionTestTag != null) Modifier.testTag(actionTestTag) else Modifier,
+                fillMaxWidth = false,
+            )
         }
     }
 }

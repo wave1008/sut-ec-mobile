@@ -66,6 +66,7 @@ fun CartScreen(
     val lang = LocalAppLanguage.current
 
     Scaffold(
+        modifier = Modifier.testTag("screen_cart"),
         topBar = { AppTopBar(title = tr("カート", "Cart")) },
         bottomBar = {
             if (cartItems.isNotEmpty()) {
@@ -131,7 +132,10 @@ private fun CartItemRow(
     onRemove: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.sm),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = MaterialTheme.spacing.sm)
+            .testTag("cart_item_${item.product.id}"),
         verticalAlignment = Alignment.Top,
     ) {
         AsyncProductImage(
@@ -150,7 +154,10 @@ private fun CartItemRow(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-                IconButton(onClick = onRemove, modifier = Modifier.size(32.dp).testTag("btn_remove_item")) {
+                IconButton(
+                    onClick = onRemove,
+                    modifier = Modifier.size(32.dp).testTag("btn_remove_${item.product.id}"),
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = tr("削除", "Remove"),
@@ -200,8 +207,17 @@ private fun CartSummaryBar(totals: OrderTotals, onCheckout: () -> Unit) {
             value = if (totals.shippingYen == 0) tr("無料", "Free") else formatYen(totals.shippingYen),
         )
         Spacer(Modifier.height(MaterialTheme.spacing.xs))
-        KeyValueRow(label = tr("合計", "Total"), value = formatYen(totals.totalYen), emphasize = true)
+        KeyValueRow(
+            label = tr("合計", "Total"),
+            value = formatYen(totals.totalYen),
+            emphasize = true,
+            modifier = Modifier.testTag("text_cart_total"),
+        )
         Spacer(Modifier.height(MaterialTheme.spacing.md))
-        PrimaryButton(text = tr("レジに進む", "Proceed to checkout"), onClick = onCheckout)
+        PrimaryButton(
+            text = tr("レジに進む", "Proceed to checkout"),
+            onClick = onCheckout,
+            modifier = Modifier.testTag("btn_checkout"),
+        )
     }
 }

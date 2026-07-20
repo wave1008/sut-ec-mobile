@@ -91,6 +91,7 @@ fun ProductDetailScreen(
     val isWishlisted = product != null && product.id in wishlistedIds
 
     Scaffold(
+        modifier = Modifier.testTag("screen_product_detail"),
         topBar = {
             AppTopBar(
                 title = "",
@@ -135,7 +136,7 @@ fun ProductDetailScreen(
                         PrimaryButton(
                             text = tr("カートに追加", "Add to cart"),
                             enabled = product.inStock,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f).testTag("btn_add_to_cart"),
                             onClick = {
                                 viewModel.addToCart()
                                 scope.launch {
@@ -239,6 +240,7 @@ private fun ProductDetailBody(
             PriceText(
                 priceYen = product.priceYen,
                 listPriceYen = product.listPriceYen,
+                modifier = Modifier.testTag("text_price"),
                 priceStyle = MaterialTheme.typography.headlineSmall,
             )
             Spacer(Modifier.height(spacing.xs))

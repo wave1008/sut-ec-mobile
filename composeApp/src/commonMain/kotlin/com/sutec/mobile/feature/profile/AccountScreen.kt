@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +63,7 @@ fun AccountScreen(
     val spacing = MaterialTheme.spacing
 
     Scaffold(
+        modifier = Modifier.testTag("screen_account"),
         topBar = { AppTopBar(title = tr("アカウント", "Account")) },
     ) { padding ->
         Column(
@@ -75,10 +77,10 @@ fun AccountScreen(
             AccountHeader(user = user, onLogin = onLogin)
 
             Spacer(Modifier.height(spacing.xl))
-            MenuRow(Icons.AutoMirrored.Outlined.ReceiptLong, tr("注文履歴", "Order history"), onOrders)
+            MenuRow(Icons.AutoMirrored.Outlined.ReceiptLong, tr("注文履歴", "Order history"), onOrders, testTag = "btn_orders")
             MenuRow(Icons.Outlined.FavoriteBorder, tr("お気に入り", "Wishlist"), onWishlist)
-            MenuRow(Icons.Outlined.LocationOn, tr("お届け先住所", "Addresses"), onAddresses)
-            MenuRow(Icons.Outlined.CreditCard, tr("お支払い方法", "Payment methods"), onPayments)
+            MenuRow(Icons.Outlined.LocationOn, tr("お届け先住所", "Addresses"), onAddresses, testTag = "btn_addresses")
+            MenuRow(Icons.Outlined.CreditCard, tr("お支払い方法", "Payment methods"), onPayments, testTag = "btn_payments")
 
             Spacer(Modifier.height(spacing.xl))
             Text(
@@ -93,17 +95,19 @@ fun AccountScreen(
                     selected = language == AppLanguage.JA,
                     label = "日本語",
                     onClick = { viewModel.setLanguage(AppLanguage.JA) },
+                    modifier = Modifier.testTag("btn_toggle_language_ja"),
                 )
                 AppFilterChip(
                     selected = language == AppLanguage.EN,
                     label = "English",
                     onClick = { viewModel.setLanguage(AppLanguage.EN) },
+                    modifier = Modifier.testTag("btn_toggle_language_en"),
                 )
             }
 
             if (user != null) {
                 Spacer(Modifier.height(spacing.xl))
-                SecondaryButton(text = tr("ログアウト", "Log out"), onClick = viewModel::logout)
+                SecondaryButton(text = tr("ログアウト", "Log out"), onClick = viewModel::logout, modifier = Modifier.testTag("btn_logout"))
             }
             Spacer(Modifier.height(spacing.lg))
         }
@@ -114,7 +118,7 @@ fun AccountScreen(
 private fun AccountHeader(user: User?, onLogin: () -> Unit) {
     val spacing = MaterialTheme.spacing
     if (user == null) {
-        PrimaryButton(text = tr("ログイン / 登録", "Log in / Sign up"), onClick = onLogin)
+        PrimaryButton(text = tr("ログイン / 登録", "Log in / Sign up"), onClick = onLogin, modifier = Modifier.testTag("btn_login"))
         return
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -140,13 +144,14 @@ private fun AccountHeader(user: User?, onLogin: () -> Unit) {
 }
 
 @Composable
-private fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit) {
+private fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit, testTag: String? = null) {
     val spacing = MaterialTheme.spacing
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = spacing.md),
+            .padding(vertical = spacing.md)
+            .let { if (testTag != null) it.testTag(testTag) else it },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
