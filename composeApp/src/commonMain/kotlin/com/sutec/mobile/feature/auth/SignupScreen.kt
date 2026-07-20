@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +45,7 @@ fun SignupScreen(
     }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_signup"),
         topBar = { AppTopBar(title = tr("登録", "Sign up"), onBack = onBack) },
     ) { padding ->
         Column(
@@ -58,7 +60,9 @@ fun SignupScreen(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
                 label = { Text(tr("お名前", "Name")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field_name"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.md))
@@ -66,7 +70,9 @@ fun SignupScreen(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 label = { Text(tr("メールアドレス", "Email")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field_email"),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
@@ -75,7 +81,9 @@ fun SignupScreen(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 label = { Text(tr("パスワード", "Password")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field_password"),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -92,12 +100,14 @@ fun SignupScreen(
             PrimaryButton(
                 text = tr("登録", "Sign up"),
                 onClick = viewModel::signup,
+                modifier = Modifier.testTag("btn_signup"),
                 loading = uiState.loading,
             )
             Spacer(Modifier.height(spacing.sm))
             AppTextButton(
                 text = tr("ログインへ", "Back to log in"),
                 onClick = onLoginClick,
+                modifier = Modifier.testTag("btn_goto_login"),
             )
             Spacer(Modifier.height(spacing.lg))
         }

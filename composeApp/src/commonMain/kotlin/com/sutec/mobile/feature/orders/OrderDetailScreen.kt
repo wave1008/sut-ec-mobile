@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +53,7 @@ fun OrderDetailScreen(
     val spacing = MaterialTheme.spacing
 
     Scaffold(
+        modifier = Modifier.testTag("screen_order_detail"),
         topBar = { AppTopBar(title = tr(ja = "注文詳細", en = "Order details"), onBack = onBack) },
     ) { padding ->
         val current = order
@@ -64,7 +66,7 @@ fun OrderDetailScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = MaterialTheme.spacing.screenH, vertical = spacing.md),
             ) {
-                OrderStatusChip(status = current.status)
+                OrderStatusChip(status = current.status, modifier = Modifier.testTag("text_order_status"))
 
                 Spacer(Modifier.height(spacing.sm))
 

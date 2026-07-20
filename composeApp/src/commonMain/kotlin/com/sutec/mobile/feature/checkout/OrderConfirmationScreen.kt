@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,7 @@ fun OrderConfirmationScreen(
     }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_order_confirmation"),
         topBar = { AppTopBar(title = tr("注文完了", "Order confirmed")) },
     ) { innerPadding ->
         Column(
@@ -75,6 +77,7 @@ fun OrderConfirmationScreen(
                     text = "#${currentOrder.id}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.extraColors.onSurfaceFaint,
+                    modifier = Modifier.testTag("text_order_id"),
                 )
                 Spacer(Modifier.height(MaterialTheme.spacing.xs))
                 Text(
@@ -96,13 +99,13 @@ fun OrderConfirmationScreen(
             PrimaryButton(
                 text = tr("注文を確認する", "View order"),
                 onClick = { onViewOrder(orderId) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("btn_view_order"),
             )
             Spacer(Modifier.height(MaterialTheme.spacing.sm))
             SecondaryButton(
                 text = tr("買い物を続ける", "Continue shopping"),
                 onClick = onContinueShopping,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("btn_continue_shopping"),
             )
         }
     }

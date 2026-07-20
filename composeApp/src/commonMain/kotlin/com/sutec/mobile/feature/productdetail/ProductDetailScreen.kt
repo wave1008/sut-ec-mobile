@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.model.Product
@@ -90,20 +91,29 @@ fun ProductDetailScreen(
     val isWishlisted = product != null && product.id in wishlistedIds
 
     Scaffold(
+        modifier = Modifier.testTag("screen_product_detail"),
         topBar = {
             AppTopBar(
                 title = "",
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = { viewModel.toggleWishlist() }, enabled = product != null) {
+                    IconButton(
+                        onClick = { viewModel.toggleWishlist() },
+                        enabled = product != null,
+                        modifier = Modifier.testTag("btn_wishlist_toggle"),
+                    ) {
                         Icon(
                             imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = null,
+                            contentDescription = if (isWishlisted) {
+                                tr("お気に入りから削除", "Remove from wishlist")
+                            } else {
+                                tr("お気に入りに追加", "Add to wishlist")
+                            },
                             tint = if (isWishlisted) MaterialTheme.extraColors.sale else MaterialTheme.colorScheme.onSurface,
                         )
                     }
-                    IconButton(onClick = onOpenCart) {
-                        Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
+                    IconButton(onClick = onOpenCart, modifier = Modifier.testTag("btn_open_cart")) {
+                        Icon(Icons.Outlined.ShoppingCart, contentDescription = tr("カート", "Cart"))
                     }
                 },
             )
@@ -126,7 +136,7 @@ fun ProductDetailScreen(
                         PrimaryButton(
                             text = tr("カートに追加", "Add to cart"),
                             enabled = product.inStock,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f).testTag("btn_add_to_cart"),
                             onClick = {
                                 viewModel.addToCart()
                                 scope.launch {
@@ -230,6 +240,7 @@ private fun ProductDetailBody(
             PriceText(
                 priceYen = product.priceYen,
                 listPriceYen = product.listPriceYen,
+                modifier = Modifier.testTag("text_price"),
                 priceStyle = MaterialTheme.typography.headlineSmall,
             )
             Spacer(Modifier.height(spacing.xs))

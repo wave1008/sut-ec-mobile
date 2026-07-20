@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 // 背景でサーバー同期しレスポンスでキャッシュを確定する。token が入るとサーバーから再取得。
 class RemoteCartRepository(
     private val api: ApiClient,
-    tokenStore: TokenStore,
+    private val tokenStore: TokenStore,
 ) : CartRepository {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -74,6 +74,12 @@ class RemoteCartRepository(
         _totals.value = computeOrderTotals(updated)
     }
 
+    // ゲスト(token 無し)はサーバー同期しない(保護APIは401になるだけ)。ログイン時 mergeGuest で反映。
+    private fun sync(block: suspend () -> Unit) {
+        if (tokenStore.current() == null) return
+        scope.launch { block() }
+    }
+
     override fun add(product: Product, quantity: Int) {
         val current = _items.value
         val updated = if (current.any { it.product.id == product.id }) {
@@ -82,7 +88,7 @@ class RemoteCartRepository(
             current + CartItem(product, quantity)
         }
         applyLocal(updated)
-        scope.launch {
+        sync {
             runCatching { api.http.post("cart/items") { setBody(AddCartItemRequest(product.id, quantity)) }.body<CartDto>() }
                 .onSuccess { applyDto(it) }
         }
@@ -94,7 +100,7 @@ class RemoteCartRepository(
             return
         }
         applyLocal(_items.value.map { if (it.product.id == productId) it.copy(quantity = quantity) else it })
-        scope.launch {
+        sync {
             runCatching { api.http.patch("cart/items/$productId") { setBody(SetQuantityRequest(quantity)) }.body<CartDto>() }
                 .onSuccess { applyDto(it) }
         }
@@ -102,14 +108,14 @@ class RemoteCartRepository(
 
     override fun remove(productId: String) {
         applyLocal(_items.value.filterNot { it.product.id == productId })
-        scope.launch {
+        sync {
             runCatching { api.http.delete("cart/items/$productId").body<CartDto>() }.onSuccess { applyDto(it) }
         }
     }
 
     override fun clear() {
         applyLocal(emptyList())
-        scope.launch {
+        sync {
             runCatching { api.http.delete("cart").body<CartDto>() }.onSuccess { applyDto(it) }
         }
     }

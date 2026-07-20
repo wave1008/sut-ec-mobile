@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import com.sutec.mobile.i18n.tr
 
 @Composable
 fun SearchField(
@@ -47,7 +48,7 @@ fun SearchField(
         trailingIcon = {
             if (value.isNotEmpty()) {
                 IconButton(onClick = onClear) {
-                    Icon(Icons.Filled.Close, contentDescription = null)
+                    Icon(Icons.Filled.Close, contentDescription = tr("クリア", "Clear"))
                 }
             }
         },

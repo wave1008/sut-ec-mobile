@@ -12,13 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sutec.mobile.i18n.tr
 
 @Composable
 fun LoadingState(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.fillMaxSize().testTag("view_loading"), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
 }
@@ -26,13 +27,14 @@ fun LoadingState(modifier: Modifier = Modifier) {
 // ロード失敗時の共通表示。再試行ボタンで ViewModel の retry を呼ぶ。
 @Composable
 fun ErrorState(onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.fillMaxSize().testTag("view_error"), contentAlignment = Alignment.Center) {
         EmptyState(
             icon = Icons.Outlined.CloudOff,
             title = tr("読み込みに失敗しました", "Couldn't load"),
             message = tr("接続を確認して、もう一度お試しください", "Check your connection and try again"),
             actionLabel = tr("再試行", "Retry"),
             onAction = onRetry,
+            actionTestTag = "btn_retry",
         )
     }
 }

@@ -12,6 +12,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import com.sutec.mobile.i18n.tr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,8 +28,8 @@ fun AppTopBar(
         modifier = modifier,
         navigationIcon = {
             if (onBack != null) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                IconButton(onClick = onBack, modifier = Modifier.testTag("btn_back")) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("戻る", "Back"))
                 }
             }
         },

@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sutec.mobile.designsystem.extraColors
+import com.sutec.mobile.i18n.tr
 
 @Composable
 fun QuantityStepper(
@@ -39,9 +41,9 @@ fun QuantityStepper(
         IconButton(
             onClick = onDecrement,
             enabled = enabled && quantity > min,
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(36.dp).testTag("btn_qty_decrement"),
         ) {
-            Icon(Icons.Filled.Remove, contentDescription = null)
+            Icon(Icons.Filled.Remove, contentDescription = tr("数量を減らす", "Decrease quantity"))
         }
         Text(
             text = quantity.toString(),
@@ -52,9 +54,9 @@ fun QuantityStepper(
         IconButton(
             onClick = onIncrement,
             enabled = enabled && quantity < max,
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(36.dp).testTag("btn_qty_increment"),
         ) {
-            Icon(Icons.Filled.Add, contentDescription = null)
+            Icon(Icons.Filled.Add, contentDescription = tr("数量を増やす", "Increase quantity"))
         }
     }
 }
