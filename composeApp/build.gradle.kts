@@ -49,8 +49,9 @@ kotlin {
         }
     }
 
+    // iosX64(Intel Mac シミュレータ)は Compose Multiplatform 1.11.0 が非配信のため宣言しない。
+    // 実機=iosArm64 / Apple Silicon シミュレータ=iosSimulatorArm64 で iosMain は成立する。
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
@@ -112,6 +113,11 @@ kotlin {
 android {
     namespace = "com.sutec.mobile"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
+
+    // BuildConfig.DEBUG を使う(NavReset.android.kt: デバッグ起動でナビをルート正規化)。
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.sutec.mobile"
