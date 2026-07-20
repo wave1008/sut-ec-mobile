@@ -131,7 +131,7 @@ iosApp     : Xcode プロジェクト(SwiftUI が ComposeUIViewController をホ
 | `AddressesRoute` / `AddressEditRoute` | 住所一覧 / 編集 | addressId?(編集時) | |
 | `PaymentMethodsRoute` / `PaymentEditRoute` | 支払い一覧 / 編集 | paymentId?(編集時) | |
 
-- **下タブ(5)**: ホーム / 検索 / カート / お気に入り / アカウント。タブ切替は状態保存 + `launchSingleTop`。
+- **下タブ(5)**: ホーム / 検索 / カート / お気に入り / アカウント。タブ切替は `popUpTo(startDestination)` + `launchSingleTop` で常にタブ根へ確定着地する(`saveState`/`restoreState` は使わず、タブ内の閲覧状態は保持しない)。理由と罠は [design.md](design.md#ナビゲーション構造の制約罠) 参照。
 - カートタブには**合計点数バッジ**を表示（`CartRepository.count` を購読）。
 - 商品詳細・チェックアウト等の非タブ画面では下タブを隠し、TopBar の戻るで復帰。
 
@@ -254,7 +254,7 @@ erDiagram
 ## 10. 検証観点(概要)
 
 - **ビルド**: Android=`./gradlew :composeApp:assembleDebug` / iOS=`xcodebuild`(simulator) / サーバー=`./gradlew :server:build`。
-- **自動テスト(サーバー)**: `./gradlew :server:test` … 単体(`OrderTotalsTest`) + 実 PostgreSQL への統合テスト(`ApiIntegrationTest`、11件)。DB は Testcontainers / `TEST_DATABASE_URL` / スキップ の3モード。
+- **自動テスト(サーバー)**: `./gradlew :server:test` … 単体(`OrderTotalsTest`) + 実 PostgreSQL への統合テスト(`ApiIntegrationTest`、12件)。DB は Testcontainers / `TEST_DATABASE_URL` / スキップ の3モード。
 - **起動**: DB=`./scripts/dev-server.sh`(Apple Container で Postgres) → サーバー=`./gradlew :server:run` → Android エミュレータ / iOS シミュレータ。
 - **通しシナリオ**: [4.3](#43-通しシナリオ代表) を両 OS で確認（実サーバー接続下）。
 - **レビュー観点**: 差し色の使い方・余白・言語切替漏れ・状態同期(カート/お気に入りバッジ)。

@@ -168,7 +168,7 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 - **クライアント**: `data/remote`(ApiClient/TokenStore/serverBaseUrl) + `Remote*Repository`（Ktor client で API 呼び出し、StateFlow キャッシュ）。`MockCatalog`/`InMemory*`/`ImageBase` は削除。認証は実認証に置換（「任意情報で成功」は廃止）。トークンは `multiplatform-settings` で永続化し起動時 `GET /me` でセッション復元、401 失効で自動ログアウト。ゲストカートはログイン時 `/cart/merge` で統合。エラーは `AppMessages` トースト + 共通 `ErrorState` 再試行。Search/Catalog は無限スクロール(pageSize 12)。
 - **接続先ポート**: 既定 8090（8080 回避）。ハードコードせず `gradle.properties`(`sutec.server.*`)/`-P`/環境変数 `SUTEC_SERVER_*` で設定、サーバーは `PORT` env。
 - **起動**: DB は Apple Container（`./scripts/dev-server.sh`、Docker デーモン不要）または Docker Compose。サーバーは `./gradlew :server:run`。
-- **自動テスト**: `OrderTotalsTest`(単体・DB不要) + `ApiIntegrationTest`(実 PostgreSQL に対し `/api/v1` を通し検証、11件)。DB は Testcontainers(Docker) / `TEST_DATABASE_URL`(外部DB) / 無ければスキップ の3モード。`./gradlew :server:test`。
+- **自動テスト**: `OrderTotalsTest`(単体・DB不要) + `ApiIntegrationTest`(実 PostgreSQL に対し `/api/v1` を通し検証、12件)。DB は Testcontainers(Docker) / `TEST_DATABASE_URL`(外部DB) / 無ければスキップ の3モード。`./gradlew :server:test`。
 - **検証済み**: 上記自動テスト全PASS（Apple Container の Postgres で実走）。加えて Android エミュレータ + iOS シミュレータで実サーバー接続・カタログ/画像描画を確認。詳細は server-design.md §11.5。
 
 ## 未確定 / 将来
