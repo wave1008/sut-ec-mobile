@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.designsystem.component.AppTopBar
@@ -45,6 +46,7 @@ fun AddressEditScreen(
     LaunchedEffect(uiState.saved) { if (uiState.saved) onSaved() }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_address_edit"),
         topBar = {
             AppTopBar(
                 title = if (addressId == null) tr("住所を追加", "Add address") else tr("住所を編集", "Edit address"),
@@ -64,7 +66,7 @@ fun AddressEditScreen(
                 value = uiState.fullName,
                 onValueChange = viewModel::onFullNameChange,
                 label = { Text(tr("氏名", "Full name")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_full_name"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.sm))
@@ -72,7 +74,7 @@ fun AddressEditScreen(
                 value = uiState.postalCode,
                 onValueChange = viewModel::onPostalCodeChange,
                 label = { Text(tr("郵便番号", "Postal code")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_postal_code"),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
@@ -81,7 +83,7 @@ fun AddressEditScreen(
                 value = uiState.prefecture,
                 onValueChange = viewModel::onPrefectureChange,
                 label = { Text(tr("都道府県", "Prefecture")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_prefecture"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.sm))
@@ -89,7 +91,7 @@ fun AddressEditScreen(
                 value = uiState.city,
                 onValueChange = viewModel::onCityChange,
                 label = { Text(tr("市区町村", "City")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_city"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.sm))
@@ -97,7 +99,7 @@ fun AddressEditScreen(
                 value = uiState.line1,
                 onValueChange = viewModel::onLine1Change,
                 label = { Text(tr("番地・建物名", "Address line 1")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_address_line"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.sm))
@@ -105,7 +107,7 @@ fun AddressEditScreen(
                 value = uiState.line2,
                 onValueChange = viewModel::onLine2Change,
                 label = { Text(tr("部屋番号など（任意）", "Address line 2 (optional)")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_address_line2"),
                 singleLine = true,
             )
             Spacer(Modifier.height(spacing.sm))
@@ -113,7 +115,7 @@ fun AddressEditScreen(
                 value = uiState.phone,
                 onValueChange = viewModel::onPhoneChange,
                 label = { Text(tr("電話番号", "Phone number")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("field_phone"),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             )
@@ -127,7 +129,7 @@ fun AddressEditScreen(
                 Switch(checked = uiState.isDefault, onCheckedChange = viewModel::onIsDefaultChange)
             }
             Spacer(Modifier.height(spacing.lg))
-            PrimaryButton(text = tr("保存", "Save"), onClick = viewModel::save)
+            PrimaryButton(text = tr("保存", "Save"), onClick = viewModel::save, modifier = Modifier.testTag("btn_save"))
             Spacer(Modifier.height(spacing.lg))
         }
     }

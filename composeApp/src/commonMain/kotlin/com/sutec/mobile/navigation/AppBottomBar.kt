@@ -20,7 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -74,12 +76,16 @@ fun AppBottomBar(navController: NavController, currentDestination: NavDestinatio
             val selected = currentDestination?.hasRoute(tab.matchClass()) == true
             NavigationBarItem(
                 selected = selected,
+                modifier = Modifier.testTag("tab_${tab.name.lowercase()}"),
                 onClick = {
                     if (!selected) {
+                        // saveState/restoreState は使わない。タブ根以外(詳細等)やタブ根への
+                        // プレーン navigate が混ざったスタックが保存されると、復元でタブ根以外
+                        // (例: Cart)が先頭に出て「ホームタブがカートを開く」誤遷移になる
+                        // (iOS で確認した BUG-1/2 の実因)。タブは常に根へ確定着地させる。
                         navController.navigate(tab.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(navController.graph.findStartDestination().id) { inclusive = false }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 },

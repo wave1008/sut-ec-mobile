@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ fun CheckoutScreen(
     }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_checkout"),
         topBar = { AppTopBar(title = tr("ご注文手続き", "Checkout"), onBack = onBack) },
         bottomBar = {
             Column(
@@ -77,6 +79,7 @@ fun CheckoutScreen(
                     enabled = !uiState.placing &&
                         uiState.selectedAddressId != null &&
                         uiState.selectedPaymentId != null,
+                    modifier = Modifier.testTag("btn_place_order"),
                 )
             }
         },
@@ -159,7 +162,12 @@ fun CheckoutScreen(
                         value = if (uiState.totals.shippingYen == 0) tr("無料", "Free") else formatYen(uiState.totals.shippingYen),
                     )
                     Spacer(Modifier.height(MaterialTheme.spacing.xs))
-                    KeyValueRow(label = tr("合計", "Total"), value = formatYen(uiState.totals.totalYen), emphasize = true)
+                    KeyValueRow(
+                        label = tr("合計", "Total"),
+                        value = formatYen(uiState.totals.totalYen),
+                        emphasize = true,
+                        modifier = Modifier.testTag("text_order_total"),
+                    )
                 }
             }
         }
@@ -185,7 +193,8 @@ private fun AddressOptionRow(address: Address, selected: Boolean, onSelect: () -
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onSelect)
-            .padding(vertical = MaterialTheme.spacing.xs),
+            .padding(vertical = MaterialTheme.spacing.xs)
+            .testTag("address_row_${address.id}"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = onSelect)
@@ -208,7 +217,8 @@ private fun PaymentOptionRow(payment: PaymentMethod, selected: Boolean, onSelect
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onSelect)
-            .padding(vertical = MaterialTheme.spacing.xs),
+            .padding(vertical = MaterialTheme.spacing.xs)
+            .testTag("payment_row_${payment.id}"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = onSelect)

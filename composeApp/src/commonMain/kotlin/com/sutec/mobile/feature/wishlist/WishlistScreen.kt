@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.designsystem.component.AppTopBar
 import com.sutec.mobile.designsystem.component.EmptyState
@@ -35,6 +36,7 @@ fun WishlistScreen(
     val wishlistedIds by viewModel.wishlistedIds.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = Modifier.testTag("screen_wishlist"),
         topBar = { AppTopBar(title = tr(ja = "お気に入り", en = "Wishlist")) },
     ) { padding ->
         when {

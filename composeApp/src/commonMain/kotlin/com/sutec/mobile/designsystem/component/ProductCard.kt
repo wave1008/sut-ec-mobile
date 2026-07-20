@@ -22,12 +22,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sutec.mobile.data.model.Product
 import com.sutec.mobile.designsystem.extraColors
 import com.sutec.mobile.designsystem.spacing
 import com.sutec.mobile.i18n.LocalAppLanguage
+import com.sutec.mobile.i18n.tr
 
 @Composable
 fun ProductCard(
@@ -39,9 +43,15 @@ fun ProductCard(
 ) {
     val extraColors = MaterialTheme.extraColors
     val spacing = MaterialTheme.spacing
+    val wishlistStateDescription = if (isWishlisted) {
+        tr("お気に入り登録済み", "Wishlisted")
+    } else {
+        tr("お気に入り未登録", "Not wishlisted")
+    }
 
     Column(
         modifier = modifier
+            .testTag("product_card_${product.id}")
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, extraColors.cardBorder, MaterialTheme.shapes.large)
@@ -62,11 +72,17 @@ fun ProductCard(
                     .padding(spacing.xxs)
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)),
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    .testTag("btn_wishlist_${product.id}")
+                    .semantics { stateDescription = wishlistStateDescription },
             ) {
                 Icon(
                     imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = null,
+                    contentDescription = if (isWishlisted) {
+                        tr("お気に入りから削除", "Remove from wishlist")
+                    } else {
+                        tr("お気に入りに追加", "Add to wishlist")
+                    },
                     tint = if (isWishlisted) extraColors.sale else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
                 )

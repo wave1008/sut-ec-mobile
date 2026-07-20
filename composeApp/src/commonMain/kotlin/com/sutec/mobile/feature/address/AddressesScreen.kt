@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,12 +53,13 @@ fun AddressesScreen(
     val spacing = MaterialTheme.spacing
 
     Scaffold(
+        modifier = Modifier.testTag("screen_addresses"),
         topBar = {
             AppTopBar(
                 title = tr("お届け先住所", "Addresses"),
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = onAddNew) {
+                    IconButton(onClick = onAddNew, modifier = Modifier.testTag("btn_add_address")) {
                         Icon(Icons.Filled.Add, contentDescription = tr("追加", "Add"))
                     }
                 },
@@ -108,7 +110,8 @@ private fun AddressCard(
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, extraColors.cardBorder, MaterialTheme.shapes.large)
-            .padding(spacing.md),
+            .padding(spacing.md)
+            .testTag("address_row_${address.id}"),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -133,8 +136,8 @@ private fun AddressCard(
         )
         Spacer(Modifier.height(spacing.sm))
         Row(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
-            AppTextButton(text = tr("編集", "Edit"), onClick = onEdit)
-            AppTextButton(text = tr("削除", "Delete"), onClick = onDelete)
+            AppTextButton(text = tr("編集", "Edit"), onClick = onEdit, modifier = Modifier.testTag("btn_edit_${address.id}"))
+            AppTextButton(text = tr("削除", "Delete"), onClick = onDelete, modifier = Modifier.testTag("btn_delete_${address.id}"))
             if (!address.isDefault) {
                 AppTextButton(text = tr("既定に設定", "Set as default"), onClick = onSetDefault)
             }

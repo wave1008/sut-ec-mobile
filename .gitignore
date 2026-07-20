@@ -7,9 +7,16 @@ local.properties
 *.iml
 .kotlin/
 xcuserdata/
+dist/
 !gradle/wrapper/gradle-wrapper.jar
+
+# ローカルツール設定(マシン固有)
+.claude/skills/
 
 # iOS
 iosApp/Pods/
 iosApp/*.xcworkspace/xcuserdata/
 iosApp/**/*.xcuserstate
+
+# ローカルMCP設定(マシン固有の絶対パスを含む)
+.mcp.json
