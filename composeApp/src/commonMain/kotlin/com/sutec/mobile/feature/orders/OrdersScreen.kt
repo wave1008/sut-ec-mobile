@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.model.Order
@@ -51,6 +52,7 @@ fun OrdersScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = Modifier.testTag("screen_orders"),
         topBar = { AppTopBar(title = tr(ja = "注文履歴", en = "Orders"), onBack = onBack) },
     ) { padding ->
         val content = Modifier.padding(padding)
@@ -89,7 +91,8 @@ private fun OrderCard(order: Order, onClick: () -> Unit) {
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, extraColors.cardBorder, MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
-            .padding(spacing.md),
+            .padding(spacing.md)
+            .testTag("order_row_${order.id}"),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

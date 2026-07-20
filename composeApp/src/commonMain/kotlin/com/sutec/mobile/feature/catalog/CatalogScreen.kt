@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.designsystem.component.AppFilterChip
@@ -77,13 +78,14 @@ fun CatalogScreen(
     LaunchedEffect(shouldLoadMore) { if (shouldLoadMore) viewModel.loadMore() }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_catalog"),
         topBar = {
             AppTopBar(
                 title = uiState.category?.name(LocalAppLanguage.current)
                     ?: tr("すべての商品", "All products"),
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = onOpenSearch) {
+                    IconButton(onClick = onOpenSearch, modifier = Modifier.testTag("btn_search")) {
                         Icon(Icons.Filled.Search, contentDescription = tr("検索", "Search"))
                     }
                 },
@@ -152,6 +154,7 @@ private fun SortChipsRow(sort: SortOption, onSelect: (SortOption) -> Unit) {
                 selected = sort == option,
                 label = sortLabel(option),
                 onClick = { onSelect(option) },
+                modifier = Modifier.testTag("chip_sort_${option.name.lowercase()}"),
             )
         }
     }

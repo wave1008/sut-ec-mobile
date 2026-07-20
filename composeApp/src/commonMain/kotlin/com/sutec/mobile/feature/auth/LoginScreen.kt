@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,6 +46,7 @@ fun LoginScreen(
     }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_login"),
         topBar = { AppTopBar(title = tr("ログイン", "Log in"), onBack = onBack) },
     ) { padding ->
         Column(
@@ -65,7 +67,9 @@ fun LoginScreen(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 label = { Text(tr("メールアドレス", "Email")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field_email"),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
@@ -74,7 +78,9 @@ fun LoginScreen(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 label = { Text(tr("パスワード", "Password")) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field_password"),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -91,12 +97,14 @@ fun LoginScreen(
             PrimaryButton(
                 text = tr("ログイン", "Log in"),
                 onClick = viewModel::login,
+                modifier = Modifier.testTag("btn_login"),
                 loading = uiState.loading,
             )
             Spacer(Modifier.height(spacing.sm))
             AppTextButton(
                 text = tr("アカウントを作成", "Create account"),
                 onClick = onSignupClick,
+                modifier = Modifier.testTag("btn_goto_signup"),
             )
             Spacer(Modifier.height(spacing.lg))
         }

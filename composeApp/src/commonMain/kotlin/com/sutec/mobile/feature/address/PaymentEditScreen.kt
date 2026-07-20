@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.data.model.PaymentType
@@ -47,6 +48,7 @@ fun PaymentEditScreen(
     LaunchedEffect(uiState.saved) { if (uiState.saved) onSaved() }
 
     Scaffold(
+        modifier = Modifier.testTag("screen_payment_edit"),
         topBar = {
             AppTopBar(
                 title = if (paymentId == null) tr("お支払い方法を追加", "Add payment method") else tr("お支払い方法を編集", "Edit payment method"),
@@ -81,7 +83,7 @@ fun PaymentEditScreen(
                     value = uiState.brand,
                     onValueChange = viewModel::onBrandChange,
                     label = { Text(tr("ブランド", "Brand")) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("field_card_brand"),
                     singleLine = true,
                 )
                 Spacer(Modifier.height(spacing.sm))
@@ -89,7 +91,7 @@ fun PaymentEditScreen(
                     value = uiState.cardNumber,
                     onValueChange = viewModel::onCardNumberChange,
                     label = { Text(tr("カード番号", "Card number")) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("field_card_number"),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
@@ -98,7 +100,7 @@ fun PaymentEditScreen(
                     value = uiState.holderName,
                     onValueChange = viewModel::onHolderNameChange,
                     label = { Text(tr("名義人", "Cardholder name")) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("field_card_holder"),
                     singleLine = true,
                 )
                 Spacer(Modifier.height(spacing.sm))
@@ -107,7 +109,7 @@ fun PaymentEditScreen(
                         value = uiState.expMonth,
                         onValueChange = viewModel::onExpMonthChange,
                         label = { Text(tr("有効期限（月）", "Exp. month")) },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag("field_expiry_month"),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
@@ -115,7 +117,7 @@ fun PaymentEditScreen(
                         value = uiState.expYear,
                         onValueChange = viewModel::onExpYearChange,
                         label = { Text(tr("有効期限（年）", "Exp. year")) },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag("field_expiry_year"),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
@@ -132,7 +134,7 @@ fun PaymentEditScreen(
                 Switch(checked = uiState.isDefault, onCheckedChange = viewModel::onIsDefaultChange)
             }
             Spacer(Modifier.height(spacing.lg))
-            PrimaryButton(text = tr("保存", "Save"), onClick = viewModel::save)
+            PrimaryButton(text = tr("保存", "Save"), onClick = viewModel::save, modifier = Modifier.testTag("btn_save"))
             Spacer(Modifier.height(spacing.lg))
         }
     }

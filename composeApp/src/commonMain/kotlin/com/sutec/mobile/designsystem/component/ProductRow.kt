@@ -21,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sutec.mobile.data.model.Product
@@ -40,9 +43,15 @@ fun ProductRow(
     val extraColors = MaterialTheme.extraColors
     val spacing = MaterialTheme.spacing
     val lang = LocalAppLanguage.current
+    val wishlistStateDescription = if (isWishlisted) {
+        tr("お気に入り登録済み", "Wishlisted")
+    } else {
+        tr("お気に入り未登録", "Not wishlisted")
+    }
 
     Row(
         modifier = modifier
+            .testTag("product_row_${product.id}")
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = spacing.sm),
@@ -70,7 +79,9 @@ fun ProductRow(
                     onClick = onToggleWishlist,
                     modifier = Modifier
                         .size(32.dp)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .testTag("btn_wishlist_${product.id}")
+                        .semantics { stateDescription = wishlistStateDescription },
                 ) {
                     Icon(
                         imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
