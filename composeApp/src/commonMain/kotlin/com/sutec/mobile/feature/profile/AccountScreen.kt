@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
@@ -56,6 +57,7 @@ fun AccountScreen(
     onWishlist: () -> Unit,
     onAddresses: () -> Unit,
     onPayments: () -> Unit,
+    onBenchmark: () -> Unit,
     viewModel: AccountViewModel = koinViewModel(),
 ) {
     val user by viewModel.currentUser.collectAsStateWithLifecycle()
@@ -81,6 +83,7 @@ fun AccountScreen(
             MenuRow(Icons.Outlined.FavoriteBorder, tr("お気に入り", "Wishlist"), onWishlist)
             MenuRow(Icons.Outlined.LocationOn, tr("お届け先住所", "Addresses"), onAddresses, testTag = "btn_addresses")
             MenuRow(Icons.Outlined.CreditCard, tr("お支払い方法", "Payment methods"), onPayments, testTag = "btn_payments")
+            MenuRow(Icons.Outlined.DateRange, tr("UIベンチマーク", "UI Benchmark"), onBenchmark, testTag = "btn_benchmark")
 
             Spacer(Modifier.height(spacing.xl))
             Text(
