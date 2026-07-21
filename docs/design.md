@@ -171,6 +171,16 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 - **自動テスト**: `OrderTotalsTest`(単体・DB不要) + `ApiIntegrationTest`(実 PostgreSQL に対し `/api/v1` を通し検証、12件)。DB は Testcontainers(Docker) / `TEST_DATABASE_URL`(外部DB) / 無ければスキップ の3モード。`./gradlew :server:test`。
 - **検証済み**: 上記自動テスト全PASS（Apple Container の Postgres で実走）。加えて Android エミュレータ + iOS シミュレータで実サーバー接続・カタログ/画像描画を確認。詳細は server-design.md §11.5。
 
+## UI テストドライバー ベンチマーク画面（開発補助・10機能外）
+
+- 目的: 自作テストドライバー(foundation-tester)の走査/スナップショット性能を、要素密度の高い重量級画面で測る。プロダクト機能ではない。
+- 実体: `feature/benchmark/BenchmarkCalendarScreen.kt`（年表示カレンダー）+ `BenchmarkDayScreen.kt`（日表示=24時間スロット）。ともに ViewModel/リポジトリ無しの純 UI。ルート `BenchmarkRoute` / `BenchmarkDayRoute(year, month, day)`(month は 1..12)。エントリは Account 画面のメニュー行 `btn_benchmark`。
+- 重量化の要点: iOS カレンダー年表示風に 1年=12ミニ月×最大42セルを描画。**LazyColumn を使わず** `verticalScroll` の素の Column で全セルをセマンティクスツリーへ同時に載せる(仮想化で測定対象が減るのを避けるため=これがベンチの肝、変更するとベンチが軽くなる)。描画年数は chip で 1/3/6/12 年に可変(既定3年≒1096セル、最大12年≒4383セル)。年数は `rememberSaveable`(詳細へ遷移して戻っても保持)。
+- 遷移: 日セルタップ → `onDayClick(year, month, day)` で `BenchmarkDayRoute` へ。ドライバーで「日タップ→遷移→戻る」シナリオを回すため。日詳細は 0..23 時の 24 スロットを非 Lazy Column で描画。
+- 決定的: 現在時刻に依存しない(基準年 `BASE_YEAR=2020` 固定・閏年/曜日は純計算)。スナップショットがラン間で安定するため。
+- 主要 testTag: `screen_benchmark` / `chip_years_<n>` / `benchmark_cell_count` / `year_header_<year>` / `month_<year>_<m>` / `day_<year>_<MM>_<dd>`(ゼロ埋め・タップで遷移)。日詳細: `screen_benchmark_day` / `slot_<HH>`(00..23)。
+- 罠(ftester での確認): iOS は画面下方ほどスナップショットの要素座標が実表示から下方向にズレ(~50pt)、極小 day セル(~17pt)への ref/座標タップが外れて遷移しないことがある。上部セル(1月上旬)は正しく遷移。Android は 42px セルでも中心座標タップなら正確。=アプリ側でなくドライバーのタップ精度側の事象。
+
 ## 未確定 / 将来
 
 - 実決済連携、画像のオブジェクトストレージ/CDN 配信、オフライン同梱切替。

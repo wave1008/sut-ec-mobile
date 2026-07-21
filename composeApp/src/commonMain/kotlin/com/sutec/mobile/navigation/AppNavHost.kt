@@ -12,6 +12,8 @@ import com.sutec.mobile.feature.address.AddressesScreen
 import com.sutec.mobile.feature.address.PaymentEditScreen
 import com.sutec.mobile.feature.address.PaymentMethodsScreen
 import com.sutec.mobile.feature.auth.LoginScreen
+import com.sutec.mobile.feature.benchmark.BenchmarkCalendarScreen
+import com.sutec.mobile.feature.benchmark.BenchmarkDayScreen
 import com.sutec.mobile.feature.auth.SignupScreen
 import com.sutec.mobile.feature.cart.CartScreen
 import com.sutec.mobile.feature.catalog.CatalogScreen
@@ -157,6 +159,24 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onWishlist = { navController.navigate(WishlistRoute) },
                 onAddresses = { navController.navigate(AddressesRoute) },
                 onPayments = { navController.navigate(PaymentMethodsRoute) },
+                onBenchmark = { navController.navigate(BenchmarkRoute) },
+            )
+        }
+
+        composable<BenchmarkRoute> {
+            BenchmarkCalendarScreen(
+                onBack = { navController.popBackStack() },
+                onDayClick = { year, month, day -> navController.navigate(BenchmarkDayRoute(year, month, day)) },
+            )
+        }
+
+        composable<BenchmarkDayRoute> { entry ->
+            val route = entry.toRoute<BenchmarkDayRoute>()
+            BenchmarkDayScreen(
+                year = route.year,
+                month = route.month,
+                day = route.day,
+                onBack = { navController.popBackStack() },
             )
         }
 
