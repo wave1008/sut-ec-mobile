@@ -21,3 +21,5 @@ import kotlinx.serialization.Serializable
 @Serializable data class AddressEditRoute(val addressId: String? = null)
 @Serializable object PaymentMethodsRoute
 @Serializable data class PaymentEditRoute(val paymentId: String? = null)
+@Serializable object BenchmarkRoute
+@Serializable data class BenchmarkDayRoute(val year: Int, val month: Int, val day: Int) // month は 1..12
