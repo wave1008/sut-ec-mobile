@@ -5,6 +5,7 @@ import com.sutec.mobile.data.model.Order
 import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.OrderRepository
+import com.sutec.mobile.util.remoteScopeExceptionHandler
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -22,7 +23,7 @@ class RemoteOrderRepository(
     private val api: ApiClient,
     tokenStore: TokenStore,
 ) : OrderRepository {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + remoteScopeExceptionHandler)
 
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
     override val orders: StateFlow<List<Order>> = _orders.asStateFlow()

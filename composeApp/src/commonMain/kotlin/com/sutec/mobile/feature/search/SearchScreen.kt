@@ -172,7 +172,7 @@ fun SearchScreen(
             when {
                 uiState.loading -> LoadingState(Modifier.fillMaxSize())
 
-                uiState.error -> ErrorState(onRetry = viewModel::search, modifier = Modifier.fillMaxSize())
+                uiState.error -> ErrorState(onRetry = viewModel::retry, modifier = Modifier.fillMaxSize())
 
                 uiState.searched && uiState.results.isEmpty() -> EmptyState(
                     icon = Icons.Outlined.SearchOff,

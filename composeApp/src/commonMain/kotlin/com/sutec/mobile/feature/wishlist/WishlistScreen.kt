@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sutec.mobile.designsystem.component.AppTopBar
 import com.sutec.mobile.designsystem.component.EmptyState
+import com.sutec.mobile.designsystem.component.ErrorState
 import com.sutec.mobile.designsystem.component.LoadingState
 import com.sutec.mobile.designsystem.component.ProductCard
 import com.sutec.mobile.designsystem.spacing
@@ -33,6 +34,7 @@ fun WishlistScreen(
 ) {
     val products by viewModel.products.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
     val wishlistedIds by viewModel.wishlistedIds.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -40,6 +42,11 @@ fun WishlistScreen(
         topBar = { AppTopBar(title = tr(ja = "お気に入り", en = "Wishlist")) },
     ) { padding ->
         when {
+            error && products.isEmpty() -> ErrorState(
+                onRetry = viewModel::retry,
+                modifier = Modifier.padding(padding),
+            )
+
             loading && products.isEmpty() -> LoadingState(modifier = Modifier.padding(padding))
 
             products.isEmpty() -> EmptyState(

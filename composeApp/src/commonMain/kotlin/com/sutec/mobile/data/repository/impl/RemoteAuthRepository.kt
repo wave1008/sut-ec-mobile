@@ -7,6 +7,7 @@ import com.sutec.mobile.data.model.User
 import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.AuthRepository
+import com.sutec.mobile.util.remoteScopeExceptionHandler
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -26,7 +27,7 @@ class RemoteAuthRepository(
     private val api: ApiClient,
     private val tokenStore: TokenStore,
 ) : AuthRepository {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + remoteScopeExceptionHandler)
 
     private val _currentUser = MutableStateFlow<User?>(null)
     override val currentUser: StateFlow<User?> = _currentUser.asStateFlow()

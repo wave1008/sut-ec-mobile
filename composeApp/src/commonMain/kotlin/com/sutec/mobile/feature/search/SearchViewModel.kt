@@ -9,12 +9,11 @@ import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.SearchQuery
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.data.repository.WishlistRepository
-import kotlinx.coroutines.CancellationException
+import com.sutec.mobile.util.safeLaunch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 // 価格帯の刻み。min/max は SearchQuery.minPriceYen/maxPriceYen にそのまま渡す(null は下限/上限なし)。
 enum class PricePreset(val minPriceYen: Int?, val maxPriceYen: Int?) {
@@ -51,14 +50,22 @@ class SearchViewModel(
     val wishlistedIds: StateFlow<Set<String>> = wishlistRepository.productIds
 
     fun load(initialQuery: String?) {
-        viewModelScope.launch {
-            val categories = productRepository.getCategories()
-            _uiState.update { it.copy(categories = categories) }
-        }
+        loadCategories()
         if (!initialQuery.isNullOrBlank()) {
             _uiState.update { it.copy(query = initialQuery) }
             search()
         }
+    }
+
+    private fun loadCategories() = safeLaunch(onError = { _uiState.update { it.copy(error = true) } }) {
+        val categories = productRepository.getCategories()
+        _uiState.update { it.copy(categories = categories, error = false) }
+    }
+
+    // ErrorState からの再試行: カテゴリを取り直し、検索済みなら結果も取り直す。
+    fun retry() {
+        loadCategories()
+        if (_uiState.value.searched) search()
     }
 
     fun onQueryChange(value: String) {
@@ -95,18 +102,12 @@ class SearchViewModel(
     fun search() {
         page = 0
         val state = _uiState.value
-        viewModelScope.launch {
+        safeLaunch(onError = { _uiState.update { it.copy(loading = false, error = true, searched = true) } }) {
             _uiState.update { it.copy(loading = true, error = false) }
-            try {
-                val resp = productRepository.getProductsPage(queryOf(state), page = 0, pageSize = PAGE_SIZE)
-                total = resp.total
-                _uiState.update {
-                    it.copy(results = resp.items, loading = false, searched = true, hasMore = resp.items.size < total)
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.update { it.copy(loading = false, error = true, searched = true) }
+            val resp = productRepository.getProductsPage(queryOf(state), page = 0, pageSize = PAGE_SIZE)
+            total = resp.total
+            _uiState.update {
+                it.copy(results = resp.items, loading = false, searched = true, hasMore = resp.items.size < total)
             }
         }
     }
@@ -115,19 +116,13 @@ class SearchViewModel(
     fun loadMore() {
         val state = _uiState.value
         if (state.loading || state.loadingMore || !state.hasMore) return
-        viewModelScope.launch {
+        safeLaunch(onError = { _uiState.update { it.copy(loadingMore = false) } }) {
             _uiState.update { it.copy(loadingMore = true) }
-            try {
-                val next = page + 1
-                val resp = productRepository.getProductsPage(queryOf(state), page = next, pageSize = PAGE_SIZE)
-                page = next
-                val merged = _uiState.value.results + resp.items
-                _uiState.update { it.copy(results = merged, loadingMore = false, hasMore = merged.size < total) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.update { it.copy(loadingMore = false) }
-            }
+            val next = page + 1
+            val resp = productRepository.getProductsPage(queryOf(state), page = next, pageSize = PAGE_SIZE)
+            page = next
+            val merged = _uiState.value.results + resp.items
+            _uiState.update { it.copy(results = merged, loadingMore = false, hasMore = merged.size < total) }
         }
     }
 
