@@ -9,11 +9,10 @@ import com.sutec.mobile.data.repository.ProductRepository
 import com.sutec.mobile.data.repository.SearchQuery
 import com.sutec.mobile.data.repository.SortOption
 import com.sutec.mobile.data.repository.WishlistRepository
-import kotlinx.coroutines.CancellationException
+import com.sutec.mobile.util.safeLaunch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 data class CatalogUiState(
     val loading: Boolean = true,
@@ -45,26 +44,20 @@ class CatalogViewModel(
     fun load(categoryId: String?) {
         currentCategoryId = categoryId
         page = 0
-        viewModelScope.launch {
+        safeLaunch(onError = { _uiState.value = _uiState.value.copy(loading = false, error = true) }) {
             _uiState.value = _uiState.value.copy(loading = true, error = false)
-            try {
-                val categories = productRepository.getCategories()
-                val category = categoryId?.let { id -> categories.firstOrNull { it.id == id } }
-                val resp = productRepository.getProductsPage(
-                    SearchQuery(categoryId = categoryId, sort = _uiState.value.sort), page = 0, pageSize = PAGE_SIZE,
-                )
-                total = resp.total
-                _uiState.value = _uiState.value.copy(
-                    loading = false,
-                    category = category,
-                    products = resp.items,
-                    hasMore = resp.items.size < total,
-                )
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(loading = false, error = true)
-            }
+            val categories = productRepository.getCategories()
+            val category = categoryId?.let { id -> categories.firstOrNull { it.id == id } }
+            val resp = productRepository.getProductsPage(
+                SearchQuery(categoryId = categoryId, sort = _uiState.value.sort), page = 0, pageSize = PAGE_SIZE,
+            )
+            total = resp.total
+            _uiState.value = _uiState.value.copy(
+                loading = false,
+                category = category,
+                products = resp.items,
+                hasMore = resp.items.size < total,
+            )
         }
     }
 
@@ -73,7 +66,7 @@ class CatalogViewModel(
     fun setSort(sort: SortOption) {
         _uiState.value = _uiState.value.copy(sort = sort)
         page = 0
-        viewModelScope.launch {
+        safeLaunch(onError = { _uiState.value = _uiState.value.copy(loading = false, error = true) }) {
             val resp = productRepository.getProductsPage(
                 SearchQuery(categoryId = currentCategoryId, sort = sort), page = 0, pageSize = PAGE_SIZE,
             )
@@ -85,21 +78,15 @@ class CatalogViewModel(
     fun loadMore() {
         val state = _uiState.value
         if (state.loading || state.loadingMore || !state.hasMore) return
-        viewModelScope.launch {
+        safeLaunch(onError = { _uiState.value = _uiState.value.copy(loadingMore = false) }) {
             _uiState.value = _uiState.value.copy(loadingMore = true)
-            try {
-                val next = page + 1
-                val resp = productRepository.getProductsPage(
-                    SearchQuery(categoryId = currentCategoryId, sort = state.sort), page = next, pageSize = PAGE_SIZE,
-                )
-                page = next
-                val merged = _uiState.value.products + resp.items
-                _uiState.value = _uiState.value.copy(products = merged, loadingMore = false, hasMore = merged.size < total)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(loadingMore = false)
-            }
+            val next = page + 1
+            val resp = productRepository.getProductsPage(
+                SearchQuery(categoryId = currentCategoryId, sort = state.sort), page = next, pageSize = PAGE_SIZE,
+            )
+            page = next
+            val merged = _uiState.value.products + resp.items
+            _uiState.value = _uiState.value.copy(products = merged, loadingMore = false, hasMore = merged.size < total)
         }
     }
 

@@ -3,6 +3,7 @@ package com.sutec.mobile.data.repository.impl
 import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.WishlistRepository
+import com.sutec.mobile.util.remoteScopeExceptionHandler
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -20,7 +21,7 @@ class RemoteWishlistRepository(
     private val api: ApiClient,
     private val tokenStore: TokenStore,
 ) : WishlistRepository {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + remoteScopeExceptionHandler)
 
     private val _ids = MutableStateFlow<Set<String>>(emptySet())
     override val productIds: StateFlow<Set<String>> = _ids.asStateFlow()

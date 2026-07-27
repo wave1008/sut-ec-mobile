@@ -5,6 +5,7 @@ import com.sutec.mobile.data.model.PaymentMethod
 import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.AccountRepository
+import com.sutec.mobile.util.remoteScopeExceptionHandler
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -26,7 +27,7 @@ class RemoteAccountRepository(
     private val api: ApiClient,
     tokenStore: TokenStore,
 ) : AccountRepository {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + remoteScopeExceptionHandler)
 
     private val _addresses = MutableStateFlow<List<Address>>(emptyList())
     override val addresses: StateFlow<List<Address>> = _addresses.asStateFlow()

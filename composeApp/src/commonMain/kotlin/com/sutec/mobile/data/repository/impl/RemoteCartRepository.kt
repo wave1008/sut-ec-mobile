@@ -11,6 +11,7 @@ import com.sutec.mobile.data.remote.ApiClient
 import com.sutec.mobile.data.remote.TokenStore
 import com.sutec.mobile.data.repository.CartRepository
 import com.sutec.mobile.data.repository.computeOrderTotals
+import com.sutec.mobile.util.remoteScopeExceptionHandler
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -31,7 +32,7 @@ class RemoteCartRepository(
     private val api: ApiClient,
     private val tokenStore: TokenStore,
 ) : CartRepository {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + remoteScopeExceptionHandler)
 
     private val _items = MutableStateFlow<List<CartItem>>(emptyList())
     override val items: StateFlow<List<CartItem>> = _items.asStateFlow()

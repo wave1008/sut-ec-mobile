@@ -6,6 +6,7 @@ import com.sutec.mobile.data.model.Product
 import com.sutec.mobile.util.AppMessages
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.bearerAuth
@@ -29,6 +30,11 @@ class ApiClient(
         expectSuccess = false
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true; encodeDefaults = true })
+        }
+        // サーバー停止/無応答時の無限待ち防止。自動リトライ(HttpRequestRetry)は入れない(UIテストの実行時間が不安定になる)。
+        install(HttpTimeout) {
+            connectTimeoutMillis = 3_000
+            requestTimeoutMillis = 10_000
         }
         defaultRequest {
             url("$base/api/v1/")
