@@ -58,22 +58,27 @@ interface OrderRepository {
 // ===== 認証(実認証: bcrypt/JWT。login/signup は失敗時 Result.failure) =====
 interface AuthRepository {
     val currentUser: StateFlow<User?>
+    // 起動時、永続化トークンの /me によるセッション復元が進行中の間 true。トークンが無ければ常に false。
+    val restoringSession: StateFlow<Boolean>
     suspend fun login(email: String, password: String): Result<User>
     suspend fun signup(name: String, email: String, password: String): Result<User>
     fun logout()
 }
 
+class UnauthorizedException : Exception("unauthorized")
+
 // ===== 住所・支払い方法 =====
 interface AccountRepository {
     val addresses: StateFlow<List<Address>>
     val paymentMethods: StateFlow<List<PaymentMethod>>
-    // id が空文字なら新規採番、それ以外は更新。
-    fun upsertAddress(address: Address)
-    fun deleteAddress(id: String)
-    fun setDefaultAddress(id: String)
+    // ミューテーションは失敗を Result で返す(呼び出し元でエラー表示する)。401 は UnauthorizedException
+    // (未ログインか失効かの判別は呼び出し側の責務)。id が空文字なら新規採番、それ以外は更新。
+    suspend fun upsertAddress(address: Address): Result<Unit>
+    suspend fun deleteAddress(id: String): Result<Unit>
+    suspend fun setDefaultAddress(id: String): Result<Unit>
     fun getAddress(id: String): Address?
-    fun upsertPayment(method: PaymentMethod)
-    fun deletePayment(id: String)
-    fun setDefaultPayment(id: String)
+    suspend fun upsertPayment(method: PaymentMethod): Result<Unit>
+    suspend fun deletePayment(id: String): Result<Unit>
+    suspend fun setDefaultPayment(id: String): Result<Unit>
     fun getPayment(id: String): PaymentMethod?
 }

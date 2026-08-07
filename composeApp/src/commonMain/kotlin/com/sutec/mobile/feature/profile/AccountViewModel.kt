@@ -13,6 +13,7 @@ class AccountViewModel(
 ) : ViewModel() {
 
     val currentUser: StateFlow<User?> = authRepository.currentUser
+    val restoringSession: StateFlow<Boolean> = authRepository.restoringSession
     val language: StateFlow<AppLanguage> = localeController.language
 
     fun setLanguage(language: AppLanguage) {
