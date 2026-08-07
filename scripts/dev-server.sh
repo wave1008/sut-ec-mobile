@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 # Docker デーモン不要のローカル開発。Apple Container(Virtualization.framework の軽量VM)で
-# PostgreSQL を起動し、DATABASE_URL をコンテナIPに向けてサーバーを実行する。
-# 使い方: scripts/dev-server.sh [--db-only]
-#   --db-only : DB だけ起動し、接続用 env を表示して終了(サーバーは各自 ./gradlew :server:run)
+# PostgreSQL を起動し、DATABASE_URL をコンテナIPに向けてサーバーを実行する(-p でループバックにも公開)。
+# 使い方: scripts/dev-server.sh [--db-only] [--loopback]
+#   --db-only  : DB だけ起動し、接続用 env を表示して終了(サーバーは各自 ./gradlew :server:run)
+#   --loopback : DATABASE_URL を 127.0.0.1:$HOST_PORT(公開ポート)に向ける
 # 前提: `brew install container`(Apple Container CLI, macOS 15+/Apple Silicon)。
+#
+# 罠: macOS の「ローカルネットワーク」プライバシー許可が無いと、ホスト側プロセス(java/python 等)から
+# コンテナIP 192.168.64.x への接続が EHOSTUNREACH("No route to host")になる。ping や /usr/bin/nc の
+# connect は通ってしまうため疎通ありに見えるが、データは流れない(公開ポート経由も転送側が同じ制限を受ける)。
+# 対処: システム設定 → プライバシーとセキュリティ → ローカルネットワーク で実行元アプリ(VS Code/Terminal)を許可し、
+# そのアプリを再起動する。
 set -euo pipefail
 
 export PATH="/opt/homebrew/bin:$PATH"
 NAME=sutec-db
 IMAGE=postgres:16
+HOST_PORT="${DB_HOST_PORT:-5432}"
 
 if ! command -v container >/dev/null 2>&1; then
   echo "Apple Container 未インストール。'brew install container' を実行してください。" >&2
@@ -23,7 +31,7 @@ container system start --enable-kernel-install >/dev/null 2>&1 || true
 if container inspect "$NAME" >/dev/null 2>&1; then
   container start "$NAME" >/dev/null 2>&1 || true
 else
-  container run -d --name "$NAME" \
+  container run -d --name "$NAME" -p "127.0.0.1:${HOST_PORT}:5432" \
     -e POSTGRES_DB=sutec -e POSTGRES_USER=sutec -e POSTGRES_PASSWORD=sutec \
     "$IMAGE" >/dev/null
 fi
@@ -37,7 +45,11 @@ done
 IP=$(container inspect "$NAME" | python3 -c \
   'import sys,json;c=json.load(sys.stdin);c=c[0] if isinstance(c,list) else c;print(c["status"]["networks"][0]["ipv4Address"].split("/")[0])')
 
-export DATABASE_URL="jdbc:postgresql://${IP}:5432/sutec"
+if [ "${1:-}" = "--loopback" ] || [ "${2:-}" = "--loopback" ]; then
+  export DATABASE_URL="jdbc:postgresql://127.0.0.1:${HOST_PORT}/sutec"
+else
+  export DATABASE_URL="jdbc:postgresql://${IP}:5432/sutec"
+fi
 export DB_USER=sutec DB_PASSWORD=sutec
 export JWT_SECRET="${JWT_SECRET:-dev-secret-change-me}"
 export IMAGES_DIR="$(cd "$(dirname "$0")/.." && pwd)/mock-server/images"
