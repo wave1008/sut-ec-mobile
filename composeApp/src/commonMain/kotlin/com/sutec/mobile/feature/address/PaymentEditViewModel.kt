@@ -1,12 +1,16 @@
 package com.sutec.mobile.feature.address
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sutec.mobile.data.model.PaymentMethod
 import com.sutec.mobile.data.model.PaymentType
 import com.sutec.mobile.data.repository.AccountRepository
+import com.sutec.mobile.data.repository.UnauthorizedException
+import com.sutec.mobile.util.AppMessages
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class PaymentEditUiState(
     val paymentId: String? = null,
@@ -18,11 +22,13 @@ data class PaymentEditUiState(
     val expMonth: String = "",
     val expYear: String = "",
     val isDefault: Boolean = false,
+    val saving: Boolean = false,
     val saved: Boolean = false,
 )
 
 class PaymentEditViewModel(
     private val accountRepository: AccountRepository,
+    private val appMessages: AppMessages,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PaymentEditUiState())
@@ -56,21 +62,42 @@ class PaymentEditViewModel(
     fun onIsDefaultChange(value: Boolean) { _uiState.value = _uiState.value.copy(isDefault = value) }
 
     fun save() {
+        if (_uiState.value.saving) return
         val state = _uiState.value
         if (state.type == PaymentType.CARD && (state.cardNumber.isBlank() || state.holderName.isBlank())) return
 
-        accountRepository.upsertPayment(
-            PaymentMethod(
-                id = state.paymentId ?: "",
-                type = state.type,
-                brand = state.brand,
-                last4 = state.cardNumber.takeLast(4),
-                holderName = state.holderName,
-                expMonth = state.expMonth.toIntOrNull() ?: 0,
-                expYear = state.expYear.toIntOrNull() ?: 0,
-                isDefault = state.isDefault,
-            ),
-        )
-        _uiState.value = state.copy(saved = true)
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(saving = true)
+            val result = accountRepository.upsertPayment(
+                PaymentMethod(
+                    id = state.paymentId ?: "",
+                    type = state.type,
+                    brand = state.brand,
+                    last4 = state.cardNumber.takeLast(4),
+                    holderName = state.holderName,
+                    expMonth = state.expMonth.toIntOrNull() ?: 0,
+                    expYear = state.expYear.toIntOrNull() ?: 0,
+                    isDefault = state.isDefault,
+                ),
+            )
+            result
+                .onSuccess {
+                    _uiState.value = _uiState.value.copy(saving = false, saved = true)
+                }
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(saving = false)
+                    if (error is UnauthorizedException) {
+                        appMessages.show(
+                            "ログインが必要です。ログインしてから再度お試しください",
+                            "Please log in to save. Log in and try again.",
+                        )
+                    } else {
+                        appMessages.show(
+                            "保存に失敗しました。時間をおいて再度お試しください",
+                            "Failed to save. Please try again.",
+                        )
+                    }
+                }
+        }
     }
 }

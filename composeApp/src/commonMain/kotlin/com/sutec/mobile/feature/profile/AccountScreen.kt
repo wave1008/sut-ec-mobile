@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +62,7 @@ fun AccountScreen(
     viewModel: AccountViewModel = koinViewModel(),
 ) {
     val user by viewModel.currentUser.collectAsStateWithLifecycle()
+    val restoringSession by viewModel.restoringSession.collectAsStateWithLifecycle()
     val language by viewModel.language.collectAsStateWithLifecycle()
     val spacing = MaterialTheme.spacing
 
@@ -76,7 +78,7 @@ fun AccountScreen(
                 .padding(horizontal = spacing.screenH),
         ) {
             Spacer(Modifier.height(spacing.lg))
-            AccountHeader(user = user, onLogin = onLogin)
+            AccountHeader(user = user, restoringSession = restoringSession, onLogin = onLogin)
 
             Spacer(Modifier.height(spacing.xl))
             MenuRow(Icons.AutoMirrored.Outlined.ReceiptLong, tr("注文履歴", "Order history"), onOrders, testTag = "btn_orders")
@@ -118,8 +120,13 @@ fun AccountScreen(
 }
 
 @Composable
-private fun AccountHeader(user: User?, onLogin: () -> Unit) {
+private fun AccountHeader(user: User?, restoringSession: Boolean, onLogin: () -> Unit) {
     val spacing = MaterialTheme.spacing
+    // 復元完了までログインボタンもユーザー情報も出さない(自動テストが「未ログイン」と誤認しないため)。
+    if (restoringSession) {
+        CircularProgressIndicator(modifier = Modifier.testTag("account_loading").size(32.dp))
+        return
+    }
     if (user == null) {
         PrimaryButton(text = tr("ログイン / 登録", "Log in / Sign up"), onClick = onLogin, modifier = Modifier.testTag("btn_login"))
         return

@@ -32,14 +32,22 @@ class RemoteAuthRepository(
     private val _currentUser = MutableStateFlow<User?>(null)
     override val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
+    // 復元対象トークンが無ければ最初から false。ある場合は /me 完了(成否問わず)で false に落とす。
+    private val _restoringSession = MutableStateFlow(tokenStore.current() != null)
+    override val restoringSession: StateFlow<Boolean> = _restoringSession.asStateFlow()
+
     init {
         // 保存済みトークンで /me を叩きセッション復元。401(無効/期限切れ)なら ApiClient が
         // token を破棄し、下の collector が currentUser=null にする。通信不通では消さない。
         if (tokenStore.current() != null) {
             scope.launch {
-                val resp = runCatching { api.http.get("me") }.getOrNull()
-                if (resp != null && resp.status.isSuccess()) {
-                    _currentUser.value = runCatching { resp.body<User>() }.getOrNull()
+                try {
+                    val resp = runCatching { api.http.get("me") }.getOrNull()
+                    if (resp != null && resp.status.isSuccess()) {
+                        _currentUser.value = runCatching { resp.body<User>() }.getOrNull()
+                    }
+                } finally {
+                    _restoringSession.value = false
                 }
             }
         }
