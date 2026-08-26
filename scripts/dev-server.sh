@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # Docker デーモン不要のローカル開発。Apple Container(Virtualization.framework の軽量VM)で
-# PostgreSQL を起動し、DATABASE_URL をコンテナIPに向けてサーバーを実行する(-p でループバックにも公開)。
-# 使い方: scripts/dev-server.sh [--db-only] [--loopback]
-#   --db-only  : DB だけ起動し、接続用 env を表示して終了(サーバーは各自 ./gradlew :server:run)
-#   --loopback : DATABASE_URL を 127.0.0.1:$HOST_PORT(公開ポート)に向ける
+# PostgreSQL を起動し、DATABASE_URL を **127.0.0.1 の公開ポート**に向けてサーバーを実行する。
+# 使い方: scripts/dev-server.sh [--db-only] [--container-ip]
+#   --db-only      : DB だけ起動し、接続用 env を表示して終了(サーバーは各自 ./gradlew :server:run)
+#   --container-ip : DATABASE_URL をコンテナIP(192.168.64.x)に向ける(従来の既定。通常は不要)
 # 前提: `brew install container`(Apple Container CLI, macOS 15+/Apple Silicon)。
 #
 # 罠: macOS の「ローカルネットワーク」プライバシー許可が無いと、ホスト側プロセス(java/python 等)から
 # コンテナIP 192.168.64.x への接続が EHOSTUNREACH("No route to host")になる。ping や /usr/bin/nc の
-# connect は通ってしまうため疎通ありに見えるが、データは流れない(公開ポート経由も転送側が同じ制限を受ける)。
-# 対処: システム設定 → プライバシーとセキュリティ → ローカルネットワーク で実行元アプリ(VS Code/Terminal)を許可し、
-# そのアプリを再起動する。
+# connect は通ってしまうため疎通ありに見える。
+# **127.0.0.1 の公開ポート経由なら許可は要らない**(2026-08-26 に ssh 越しで実測: コンテナIPでは
+# EHOSTUNREACH、127.0.0.1 では HikariPool が接続できた)。だから既定を loopback にしてある ——
+# **ssh 越しに起動するプロセス(リモート実行のフック等)には、そもそも許可を与える相手が
+# システム設定の一覧に現れない**ので、コンテナIPだと画面から起動する以外に手が無くなる。
 set -euo pipefail
 
 export PATH="/opt/homebrew/bin:$PATH"
@@ -45,10 +47,12 @@ done
 IP=$(container inspect "$NAME" | python3 -c \
   'import sys,json;c=json.load(sys.stdin);c=c[0] if isinstance(c,list) else c;print(c["status"]["networks"][0]["ipv4Address"].split("/")[0])')
 
-if [ "${1:-}" = "--loopback" ] || [ "${2:-}" = "--loopback" ]; then
-  export DATABASE_URL="jdbc:postgresql://127.0.0.1:${HOST_PORT}/sutec"
-else
+# 既定は loopback(上の「罠」参照)。--container-ip のときだけ従来のコンテナIPを使う。
+# --loopback は後方互換のため受け付ける(既定と同じ意味)
+if [ "${1:-}" = "--container-ip" ] || [ "${2:-}" = "--container-ip" ]; then
   export DATABASE_URL="jdbc:postgresql://${IP}:5432/sutec"
+else
+  export DATABASE_URL="jdbc:postgresql://127.0.0.1:${HOST_PORT}/sutec"
 fi
 export DB_USER=sutec DB_PASSWORD=sutec
 export JWT_SECRET="${JWT_SECRET:-dev-secret-change-me}"
