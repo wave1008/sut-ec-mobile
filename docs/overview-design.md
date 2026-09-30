@@ -212,7 +212,7 @@ erDiagram
 | **注文確定** | サーバーがカートから Order を構築し**金額を権威計算**（`computeOrderTotals`）→ items は Product スナップショット → 注文追加 → カートをクリア。初期ステータスは PROCESSING。client は住所/支払いの選択 ID のみ送る。 |
 | **認証** | 実認証。bcrypt でパスワードをハッシュ保存、成功で JWT 発行。二重登録は 409、誤資格は 401。client は JWT を `TokenStore` に保持し `Authorization: Bearer` で送信。 |
 | **お気に入り同期** | `WishlistRepository.productIds`(StateFlow) を全画面が購読し、どこで toggle しても即反映。 |
-| **国際化(i18n)** | `LocaleController`(StateFlow) を Koin シングルトンで保持 → App が `LocalAppLanguage` に供給 → 全画面が即時再構成。文言は呼び出し側でインラインに `tr(ja, en)`。 |
+| **国際化(i18n)** | `LocaleController`(StateFlow) を Koin シングルトンで保持(選択言語は `Settings` に永続化し起動時復元) → App が `LocalAppLanguage` に供給 → 全画面が即時再構成。文言は呼び出し側でインラインに `tr(ja, en)`。 |
 | **デフォルト設定** | 住所・支払いは 1 件を既定にでき、チェックアウトで初期選択に用いる。 |
 
 ---

@@ -12,7 +12,7 @@ Amazon 風の EC 買い物アプリを Compose Multiplatform で iOS / Android �
 ## 決定事項（ユーザー確認済み）
 
 - 機能: 提案の10機能で確定
-- UI言語: **日英2言語対応**（実行時トグル）
+- UI言語: **日英2言語対応**（実行時トグル。選択は端末ローカルに永続化）
 - デザイン: **ライト&ミニマル**（白基調・余白広め・単色アクセント）
 - 商品画像: **著作権処理の対象外画像をローカル配信**（AI生成/CC0/PD＋複製。`mock-server/images/<id>-<n>.jpg`。出典台帳は `mock-server/image-provenance.json`）。第1段階は `python3 -m http.server` で配信していたが、**第2段階では `:server` が `/images` で配信**（アプリは Coil3 で接続先URLから取得）。
 - データ: この段階は**ローカルのインメモリ・ダミー**（`delay()` で通信を擬似）

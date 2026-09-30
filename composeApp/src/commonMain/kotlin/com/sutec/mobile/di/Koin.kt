@@ -34,13 +34,12 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication =
 // repository/viewmodel は実装クラス完成後にここへ追記する。
 // 全 repository は状態(カート/お気に入り/セッション)を保持するため single。
 val appModule = module {
-    single { LocaleController() }
-
-    // Settings で JWT を永続化(no-arg が SharedPreferences/NSUserDefaults を自動供給)。
+    // Settings で JWT と表示言語を永続化(no-arg が SharedPreferences/NSUserDefaults を自動供給)。
     // TokenStore は AuthRepository が set/clear、ApiClient が付与、他 Remote 実装が購読して再取得。
     single { AppMessages() }
     single<Settings> { Settings() }
     single { TokenStore(get()) }
+    single { LocaleController(get()) }
     single { ApiClient(get(), get()) }
 
     single<ProductRepository> { RemoteProductRepository(get()) }
