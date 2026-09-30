@@ -3,6 +3,7 @@ package com.sutec.mobile.i18n
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -29,16 +30,26 @@ fun tr(lang: AppLanguage, ja: String, en: String): String =
         AppLanguage.EN -> en
     }
 
-// アプリ全体の言語状態。Koin シングルトンで供給し、プロフィール画面から toggle。
-class LocaleController {
-    private val _language = MutableStateFlow(AppLanguage.JA)
+// アプリ全体の言語状態。Koin シングルトンで供給し、アカウント画面から切替。
+// Settings(Android=SharedPreferences / iOS=NSUserDefaults)に保存し起動時に復元する。
+// 保存値は enum の name("JA"/"EN")。未保存・不正値は JA。
+class LocaleController(private val settings: Settings) {
+    private val _language = MutableStateFlow(
+        settings.getStringOrNull(KEY)?.let { saved -> AppLanguage.entries.firstOrNull { it.name == saved } }
+            ?: AppLanguage.JA,
+    )
     val language: StateFlow<AppLanguage> = _language
 
     fun set(lang: AppLanguage) {
+        settings.putString(KEY, lang.name)
         _language.value = lang
     }
 
     fun toggle() {
-        _language.value = if (_language.value == AppLanguage.JA) AppLanguage.EN else AppLanguage.JA
+        set(if (_language.value == AppLanguage.JA) AppLanguage.EN else AppLanguage.JA)
+    }
+
+    private companion object {
+        const val KEY = "app_language"
     }
 }
