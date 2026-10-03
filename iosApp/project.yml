@@ -8,6 +8,8 @@ options:
 settings:
   base:
     ONLY_ACTIVE_ARCH: YES
+    # x86_64 を含めると :composeApp:syncComposeResourcesForIos が "Unknown iOS simulator arch: 'x86_64'" で失敗する。
+    ARCHS: arm64
     SWIFT_VERSION: "5.0"
 
 targets:
