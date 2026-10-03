@@ -39,7 +39,7 @@ targets:
           - UIInterfaceOrientationLandscapeRight
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.sutec.mobile
+        PRODUCT_BUNDLE_IDENTIFIER: com.sutec.mobile.ios
         PRODUCT_NAME: iosApp
         # Kotlin フレームワークは gradle が xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME) に生成。
         FRAMEWORK_SEARCH_PATHS:
