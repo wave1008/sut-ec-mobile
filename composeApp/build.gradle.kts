@@ -120,7 +120,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sutec.mobile"
+        applicationId = "com.sutec.mobile.android"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
