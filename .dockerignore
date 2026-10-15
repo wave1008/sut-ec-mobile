@@ -1,9 +1,25 @@
+# server/Dockerfile は server/build/install/server と mock-server/images しか使わない。それ以外を送らない。
+# 罠: `*` + `!path` のホワイトリスト形式は Apple Container(container build)で
+# "changes out of order" になり失敗する。除外列挙で書くこと。
 .git
-**/build
 .gradle
 .kotlin
-iosApp
-*.iml
+.build
 .idea
-.DS_Store
-mock-server/images-copyright-review
+.vscode
+**/.DS_Store
+*.iml
+local.properties
+build
+dist
+docs
+gradle
+scripts
+composeApp
+iosApp
+shared
+server/src
+server/build/*
+!server/build/install
+mock-server/*
+!mock-server/images

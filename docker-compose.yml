@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:16-alpine
     environment:
       POSTGRES_DB: sutec
       POSTGRES_USER: sutec
@@ -15,7 +15,7 @@ services:
       timeout: 3s
       retries: 10
 
-  # ローカル一括起動用。開発は `./gradlew :server:run`(db だけ compose 起動)でも可。
+  # ローカル一括起動用。事前に `./gradlew :server:installDist` が必要。開発は `./gradlew :server:run`(db だけ compose 起動)でも可。
   server:
     build:
       context: .

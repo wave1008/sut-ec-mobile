@@ -17,7 +17,7 @@ set -euo pipefail
 
 export PATH="/opt/homebrew/bin:$PATH"
 NAME=sutec-db
-IMAGE=postgres:16
+IMAGE=postgres:16-alpine
 HOST_PORT="${DB_HOST_PORT:-5432}"
 
 if ! command -v container >/dev/null 2>&1; then

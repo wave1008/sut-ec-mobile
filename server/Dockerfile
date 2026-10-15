@@ -1,14 +1,10 @@
-# マルチステージ: gradle でビルド → JRE で実行。ルートコンテキストから build する(docker-compose.yml)。
-FROM gradle:8.11-jdk17 AS build
+# 前提: ホストで `./gradlew :server:installDist` 済み(イメージ内で Gradle を回さない=軽量化のため)。
+# ルートコンテキストから build する。.dockerignore はホワイトリスト(下の2パス以外を送らない)。
+# 17-jre-alpine は arm64 非配信のため 21(17 ターゲットの bytecode はそのまま動く)。
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY . .
-RUN gradle :server:installDist --no-daemon
-
-FROM eclipse-temurin:17-jre
-WORKDIR /app
-COPY --from=build /app/server/build/install/server ./
-# 画像実体を同梱(IMAGES_DIR で参照)。
-COPY --from=build /app/mock-server/images /app/mock-server/images
+COPY server/build/install/server ./
+COPY mock-server/images /app/mock-server/images
 ENV PORT=8090
 ENV IMAGES_DIR=/app/mock-server/images
 EXPOSE 8090
