@@ -17,7 +17,7 @@ Apple Container はコンテナ毎に IP を割り当てる(例 192.168.64.2)。
 手動の場合:
 ```bash
 container system start --enable-kernel-install
-container run -d --name sutec-db -e POSTGRES_DB=sutec -e POSTGRES_USER=sutec -e POSTGRES_PASSWORD=sutec postgres:16
+container run -d --name sutec-db -e POSTGRES_DB=sutec -e POSTGRES_USER=sutec -e POSTGRES_PASSWORD=sutec postgres:16-alpine
 container ls   # IP を確認(192.168.64.x)
 DATABASE_URL=jdbc:postgresql://<IP>:5432/sutec DB_USER=sutec DB_PASSWORD=sutec ./gradlew :server:run
 ```
@@ -27,7 +27,7 @@ DATABASE_URL=jdbc:postgresql://<IP>:5432/sutec DB_USER=sutec DB_PASSWORD=sutec .
 docker compose up -d db          # PostgreSQL 16
 ./gradlew :server:run            # http://localhost:8090
 # または一括:
-docker compose up --build        # db + server
+./gradlew :server:installDist && docker compose up --build   # db + server
 ```
 
 起動時に Flyway がマイグレーション(V1/V2)を適用し、カタログが空なら `CatalogSeed` を投入する。
