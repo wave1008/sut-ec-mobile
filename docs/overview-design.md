@@ -253,7 +253,7 @@ erDiagram
 
 ## 10. 検証観点(概要)
 
-- **ビルド**: Android=`./gradlew :composeApp:assembleDebug` / iOS=`xcodebuild`(simulator) / サーバー=`./gradlew :server:build`。
+- **ビルド**: Android=`./gradlew :androidApp:assembleDebug` / iOS=`xcodebuild`(simulator) / サーバー=`./gradlew :server:build`。
 - **自動テスト(サーバー)**: `./gradlew :server:test` … 単体(`OrderTotalsTest`) + 実 PostgreSQL への統合テスト(`ApiIntegrationTest`、12件)。DB は Testcontainers / `TEST_DATABASE_URL` / スキップ の3モード。
 - **起動**: DB=`./scripts/dev-server.sh`(Apple Container で Postgres) → サーバー=`./gradlew :server:run` → Android エミュレータ / iOS シミュレータ。
 - **通しシナリオ**: [4.3](#43-通しシナリオ代表) を両 OS で確認（実サーバー接続下）。

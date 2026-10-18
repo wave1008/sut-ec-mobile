@@ -45,7 +45,13 @@ dependencies {
     testImplementation(libs.testcontainers.junit)
 }
 
-kotlin { jvmToolchain(17) }
+// 版を名指しする jvmToolchain は「その版の JDK が手元にあること」を要るので使わず、出力の版だけ揃える(JDK 25 以降でビルドできる)。
+// 実行環境は server/Dockerfile の JRE 25。
+kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25) } }
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
 
 tasks.withType<Test> {
     useJUnitPlatform()

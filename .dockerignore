@@ -15,6 +15,7 @@ dist
 docs
 gradle
 scripts
+androidApp
 composeApp
 iosApp
 shared
