@@ -8,15 +8,18 @@ EC 買い物アプリ。**Compose Multiplatform** で iOS / Android 両対応。
 
 ## モジュール
 
-- `:composeApp` — Android / iOS アプリ本体
+- `:composeApp` — Android / iOS 共通の画面と処理(Kotlin Multiplatform。iOS の framework もここで作る)
+- `:androidApp` — Android アプリ本体(Activity・Application・マニフェスト)
 - `:shared` — モデル・DTO・注文金額計算など client/server 共通の契約
 - `:server` — Ktor 3 + PostgreSQL バックエンド（詳細は [server/README.md](server/README.md)）
 
 ## クイックスタート
 
+ビルドには JDK 25 が必要です(Homebrew なら `brew install openjdk@25`)。
+
 ```bash
 ./scripts/dev-server.sh              # Postgres(Apple Container) + サーバー起動 (http://localhost:8090)
-./gradlew :composeApp:assembleDebug  # Android デバッグビルド
+./gradlew :androidApp:assembleDebug  # Android デバッグビルド
 ```
 
 サーバー起動の詳細（Docker Compose 代替、環境変数、テスト）は [server/README.md](server/README.md) を参照。

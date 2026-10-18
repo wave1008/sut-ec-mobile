@@ -72,7 +72,7 @@ curl -s localhost:8090/api/v1/products/electronics_1
   sutec.server.host.ios=127.0.0.1      # iOS シミュレータ→ホスト
   sutec.server.port=8090
   ```
-  例: `./gradlew :composeApp:assembleDebug -Psutec.server.port=9000`。build 時に `ServerConfigDefaults.kt` を生成し `serverBaseUrl()` が参照する。
+  例: `./gradlew :androidApp:assembleDebug -Psutec.server.port=9000`。build 時に `ServerConfigDefaults.kt` を生成し `serverBaseUrl()` が参照する。
 
 ## API 概要（`/api/v1`、詳細は server-design.md §4）
 - 公開: `GET /categories` `/products`(検索/ページング) `/products/featured` `/products/by-ids` `/products/{id}` `/products/{id}/reviews` `/products/{id}/related`、`POST /auth/signup` `/auth/login`

@@ -135,7 +135,7 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 
 ## 検証（Verification）
 
-- ビルド: `./gradlew :composeApp:assembleDebug`（Android）/ `xcodebuild` で iOS simulator ビルド。
+- ビルド: `./gradlew :androidApp:assembleDebug`（Android）/ `xcodebuild` で iOS simulator ビルド。
 - 起動: Android エミュレータへ install→起動、iOS Simulator 起動。`run` スキルを使用。
 - 通しシナリオ（両OS）: 一覧→検索/絞り込み→商品詳細→カート追加→カート数量変更→チェックアウト→注文確定→注文履歴に反映 / お気に入り登録↔一覧同期 / ログイン→プロフィールで日英トグルが全画面反映 / 住所・支払いのCRUD。
 - 各フェーズ完了時にメインがレビュー（差し色の使い方・余白・言語切替漏れ・状態同期）。
@@ -149,7 +149,7 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 ### iOS の必須制約(罠)
 - Compose Multiplatform(iOS) は起動時に `Info.plist` の `CADisableMinimumFrameDurationOnPhone=true` を要求する。無いと `PlistSanityCheck` が例外→即クラッシュ。
   そのため `iosApp/project.yml` は自動生成でなく明示 Info.plist(`info.properties`)でこのキーを付与している。`xcodegen generate` の再実行時も維持すること。
-- ビルド/起動: Android=`./gradlew :composeApp:assembleDebug` + adb install。iOS=`cd iosApp && xcodegen generate && xcodebuild ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO` → `simctl install/launch`。
+- ビルド/起動: Android=`./gradlew :androidApp:assembleDebug` + adb install。iOS=`cd iosApp && xcodegen generate && xcodebuild ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO` → `simctl install/launch`。
 - **画像サーバー必須(第1段階の記述)**: 第1段階は `mock-server/serve.sh`(python http.server:8000)で配信していた。**第2段階では `:server` が `/images` で配信**し python 配信は不要（`./scripts/dev-server.sh` でサーバー起動）。停止していると全商品画像がプレースホルダになる点は同じ。
 
 ### 画像パイプライン(mock-server/)

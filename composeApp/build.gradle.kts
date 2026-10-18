@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
@@ -43,9 +43,12 @@ val generateServerConfig = tasks.register("generateServerConfig") {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "com.sutec.mobile.composeapp"
+        compileSdk = libs.versions.androidCompileSdk.get().toInt()
+        minSdk = libs.versions.androidMinSdk.get().toInt()
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.JVM_25)
         }
     }
 
@@ -66,7 +69,7 @@ kotlin {
             kotlin.srcDir(generateServerConfig)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
+            api(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -110,31 +113,3 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.sutec.mobile"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
-
-    // BuildConfig.DEBUG を使う(NavReset.android.kt: デバッグ起動でナビをルート正規化)。
-    buildFeatures {
-        buildConfig = true
-    }
-
-    defaultConfig {
-        applicationId = "com.sutec.mobile.android"
-        minSdk = libs.versions.androidMinSdk.get().toInt()
-        targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-}
