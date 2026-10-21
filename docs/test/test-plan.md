@@ -114,7 +114,7 @@
 | 項目 | 内容 |
 |---|---|
 | Android | Android エミュレータ。ビルド `./gradlew :androidApp:assembleDebug` → adb install。 |
-| iOS | iOS シミュレータ。`cd iosApp && xcodegen generate && xcodebuild ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO` → `simctl install/launch`。 |
+| iOS | iOS シミュレータ。コミット済みの `iosApp/iosApp.xcodeproj` を直接 `cd iosApp && xcodebuild -project iosApp.xcodeproj ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO`(xcodegen は不要。`iosApp/project.yml` を変えたときだけ xcodegen で作り直し、生成した pbxproj をコミットする) → `simctl install/launch`。 |
 | 画像サーバー(第1段階) ※第2段階は §0.1 参照 | 商品画像はローカルの `mock-server`(`python3 -m http.server 8000`)から配信(Android=`10.0.2.2:8000` / iOS=`127.0.0.1:8000`)。**テスト実施前に起動が必須**(停止時は全画像がプレースホルダ)。インターネット接続は不要。 |
 | データ | 起動時のシード(商品/カテゴリ/レビュー/初期住所・支払い・注文)を初期状態とする。 |
 
