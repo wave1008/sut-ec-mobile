@@ -148,8 +148,8 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 
 ### iOS の必須制約(罠)
 - Compose Multiplatform(iOS) は起動時に `Info.plist` の `CADisableMinimumFrameDurationOnPhone=true` を要求する。無いと `PlistSanityCheck` が例外→即クラッシュ。
-  そのため `iosApp/project.yml` は自動生成でなく明示 Info.plist(`info.properties`)でこのキーを付与している。`xcodegen generate` の再実行時も維持すること。
-- ビルド/起動: Android=`./gradlew :androidApp:assembleDebug` + adb install。iOS=`cd iosApp && xcodegen generate && xcodebuild ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO` → `simctl install/launch`。
+  そのため `iosApp/project.yml` は自動生成でなく明示 Info.plist(`info.properties`)でこのキーを付与している。プロジェクトの定義を変えるときだけ `xcodegen generate` で作り直し(生成した `project.pbxproj` をコミットする)、その際もこのキーを維持すること。
+- ビルド/起動: Android=`./gradlew :androidApp:assembleDebug` + adb install。iOS=コミット済みの `iosApp/iosApp.xcodeproj` を直接 `cd iosApp && xcodebuild -project iosApp.xcodeproj ... -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO`(xcodegen は不要) → `simctl install/launch`。
 - **画像サーバー必須(第1段階の記述)**: 第1段階は `mock-server/serve.sh`(python http.server:8000)で配信していた。**第2段階では `:server` が `/images` で配信**し python 配信は不要（`./scripts/dev-server.sh` でサーバー起動）。停止していると全商品画像がプレースホルダになる点は同じ。
 
 ### 画像パイプライン(mock-server/)

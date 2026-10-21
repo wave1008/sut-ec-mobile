@@ -238,7 +238,7 @@ erDiagram
 | **国際化** | 日英 2 言語・実行時トグル。 |
 | **性能** | 第2段階は実 API（ローカルは数ms〜数十ms）。実運用性能は本番デプロイ時に再評価。 |
 | **保守性** | 保守者は Claude Code。1 ファイル約 2,000 行以下、1 タスクの編集は 1〜2 ファイルに収める。機能は `feature/xxx` ディレクトリ単位で疎結合。 |
-| **iOS 固有制約(罠)** | 起動時に `Info.plist` の `CADisableMinimumFrameDurationOnPhone=true` が必須(無いと `PlistSanityCheck` 例外で即クラッシュ)。`iosApp/project.yml` は明示 Info.plist でこのキーを付与し、`xcodegen generate` 再実行時も維持する。 |
+| **iOS 固有制約(罠)** | 起動時に `Info.plist` の `CADisableMinimumFrameDurationOnPhone=true` が必須(無いと `PlistSanityCheck` 例外で即クラッシュ)。`iosApp/project.yml` は明示 Info.plist でこのキーを付与し、プロジェクトの定義を変えるときだけ `xcodegen generate` で作り直し(生成した pbxproj をコミットする)、その際も維持する。 |
 
 ---
 
