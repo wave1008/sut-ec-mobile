@@ -1,7 +1,8 @@
 #!/bin/bash
 # fleetest のクイックスタート用に、sut-ec-mobile のサーバーを動かす準備をする。fleetest の作業フォルダで実行する:
 #   bash ../sut-ec-mobile/fleetest/prepare.sh [テストプロジェクト名(既定 project1)]
-# 段: ①Mac の確認 ②Apple Container(無ければ Homebrew で入れる)③ランタイムの起動 ④イメージの取得 ⑤compose.yaml の配置。
+# 段: ①Mac の確認 ②Apple Container(無ければ Homebrew で入れる)③ランタイムの起動 ④イメージの取得 ⑤compose.yaml の配置
+#     ⑥アプリのビルドに使う JDK 25(無ければ Homebrew で入れる)。
 # 済んでいる段は飛ばす(何度実行してもよい)。シェルの設定ファイルは変更しない。アプリはビルドしない。
 # 取得するイメージは compose.yaml の image: 行から読む(イメージ名の正本は compose.yaml の1か所)。
 # 取得は linux/arm64 に絞る: 絞らないと Apple Container は全プラットフォームを取得・展開する(postgres:16-alpine で 53 秒 → 8 秒)。
@@ -13,7 +14,7 @@ COMPOSE_SRC="$HERE/compose.yaml"
 # 非対話のシェルでは Homebrew の bin が PATH に無いことがある(このプロセスの中だけで足す)
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-step() { printf '\n[%s/5] %s\n' "$1" "$2"; }
+step() { printf '\n[%s/6] %s\n' "$1" "$2"; }
 fail() { printf 'ERROR: %s\n' "$1" >&2; exit 1; }
 
 step 1 "Checking this Mac and the work folder"
@@ -68,5 +69,19 @@ else
   cp "$COMPOSE_SRC" "$DEST"
   echo "Wrote $DEST"
 fi
+
+step 6 "JDK 25 for building the app"
+# Homebrew の openjdk@25 は keg-only で /usr/libexec/java_home に出ない(java_home で探すと「無い」と誤る)。
+# 見るのは brew --prefix の opt/openjdk@25 だけ(素の openjdk は 25 ではない)
+command -v brew >/dev/null 2>&1 || fail "Homebrew is not installed. Install it from https://brew.sh and run this again"
+JDK_HOME="$(brew --prefix)/opt/openjdk@25"
+if [ -x "$JDK_HOME/bin/java" ]; then
+  echo "OK: $("$JDK_HOME/bin/java" -version 2>&1 | head -1)"
+else
+  echo "Installing JDK 25 (openjdk@25) with Homebrew..."
+  brew install openjdk@25
+  [ -x "$JDK_HOME/bin/java" ] || fail "openjdk@25 was installed but $JDK_HOME/bin/java is missing"
+fi
+echo "Build the app with: JAVA_HOME=$JDK_HOME"
 
 printf '\nDone. fleetest starts and stops the server on every run.\n'
