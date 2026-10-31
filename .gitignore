@@ -22,3 +22,5 @@ iosApp/build-device/
 
 # ローカルMCP設定(マシン固有の絶対パスを含む)
 .mcp.json
+
+mock-server/generated/
