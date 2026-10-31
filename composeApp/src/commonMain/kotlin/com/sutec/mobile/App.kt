@@ -35,7 +35,7 @@ import org.koin.compose.koinInject
 
 // ルート: Coil 登録 -> 言語 Local 供給 -> AppTheme -> 下タブ付き Scaffold + NavHost。
 // exposeTestTagsAsResourceId() をルートに設定 -> testTag が Android resource-id / iOS
-// accessibilityIdentifier として露出し foundation-tester から参照可能(docs/test/ui-test-tags.md)。
+// accessibilityIdentifier として露出し fleetest から参照可能(docs/test/ui-test-tags.md)。
 @Composable
 fun App() {
     setSingletonImageLoaderFactory { context -> buildImageLoader(context) }

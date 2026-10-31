@@ -173,7 +173,7 @@ CLAUDE.md 準拠: 共有契約は先に確定 → 機能はディレクトリ互
 
 ## UI テストドライバー ベンチマーク画面（開発補助・10機能外）
 
-- 目的: 自作テストドライバー(foundation-tester)の走査/スナップショット性能を、要素密度の高い重量級画面で測る。プロダクト機能ではない。
+- 目的: 自作テストドライバー(fleetest)の走査/スナップショット性能を、要素密度の高い重量級画面で測る。プロダクト機能ではない。
 - 実体: `feature/benchmark/BenchmarkCalendarScreen.kt`（年表示カレンダー）+ `BenchmarkDayScreen.kt`（日表示=24時間スロット）。ともに ViewModel/リポジトリ無しの純 UI。ルート `BenchmarkRoute` / `BenchmarkDayRoute(year, month, day)`(month は 1..12)。エントリは Account 画面のメニュー行 `btn_benchmark`。
 - 重量化の要点: iOS カレンダー年表示風に 1年=12ミニ月×最大42セルを描画。**LazyColumn を使わず** `verticalScroll` の素の Column で全セルをセマンティクスツリーへ同時に載せる(仮想化で測定対象が減るのを避けるため=これがベンチの肝、変更するとベンチが軽くなる)。描画年数は chip で 1/3/6/12 年に可変(既定3年≒1096セル、最大12年≒4383セル)。年数は `rememberSaveable`(詳細へ遷移して戻っても保持)。
 - 遷移: 日セルタップ → `onDayClick(year, month, day)` で `BenchmarkDayRoute` へ。ドライバーで「日タップ→遷移→戻る」シナリオを回すため。日詳細は 0..23 時の 24 スロットを非 Lazy Column で描画。

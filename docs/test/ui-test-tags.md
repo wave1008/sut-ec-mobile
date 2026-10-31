@@ -1,10 +1,10 @@
 # UI テスト用 testTag 規約
 
-UI テスト(Compose UI テスト / foundation-tester 実機・シミュ)が要素を安定して特定・assert できるようにするための `Modifier.testTag(...)` 命名規約。**この規約は実装と同期が必要な契約。** 追加・変更したら本ファイルの「登録済みタグ」表も更新する。
+UI テスト(Compose UI テスト / fleetest 実機・シミュ)が要素を安定して特定・assert できるようにするための `Modifier.testTag(...)` 命名規約。**この規約は実装と同期が必要な契約。** 追加・変更したら本ファイルの「登録済みタグ」表も更新する。
 
 ## 露出設定(必須・1箇所)
 
-ルート([App.kt](../../composeApp/src/commonMain/kotlin/com/sutec/mobile/App.kt))の最上位 Scaffold に `Modifier.exposeTestTagsAsResourceId()` を設定済み。これで testTag が Android の resource-id / iOS の accessibilityIdentifier としてプラットフォームのアクセシビリティツリーに露出し、foundation-tester から参照できる。**この設定を外すと実機ドライブでタグが見えなくなる。**
+ルート([App.kt](../../composeApp/src/commonMain/kotlin/com/sutec/mobile/App.kt))の最上位 Scaffold に `Modifier.exposeTestTagsAsResourceId()` を設定済み。これで testTag が Android の resource-id / iOS の accessibilityIdentifier としてプラットフォームのアクセシビリティツリーに露出し、fleetest から参照できる。**この設定を外すと実機ドライブでタグが見えなくなる。**
 
 `testTagsAsResourceId` は Android 専用 API のため commonMain から直接呼べず、expect/actual で分離している([util/TestTags.kt](../../composeApp/src/commonMain/kotlin/com/sutec/mobile/util/TestTags.kt) = expect、Android actual = `semantics{testTagsAsResourceId=true}`、iOS actual = no-op)。
 
