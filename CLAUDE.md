@@ -20,19 +20,23 @@
 配信する画像は**著作権処理の対象外のみ**を使う: AI生成 / CC0・パブリックドメイン / それら対象外画像の複製。CC BY・BY-SA・BY-NC 等(帰属・非商用・継承が必要)は配信フォルダに入れない。
 
 置き場と参照:
-- 実体 `mock-server/images/<productId>-<n>.jpg`。`imgmap.json` が id→英語検索語→枚数。`mock-server/serve.sh` で配信(既定 :8000)。
-- 参照 URL は `imageBaseUrl()`(expect/actual): Android エミュ=`http://10.0.2.2:8000` / iOS シミュ=`http://127.0.0.1:8000`。平文HTTPは Android=`usesCleartextTraffic`, iOS=ATS例外 で許可済み。
+- 実体 `mock-server/images/<productId>-<n>.jpg`。`imgmap.json` が id→英語検索語→枚数。`:server` が `IMAGES_DIR` を `/images` で配信(既定 :8090, `Routing.kt`)。
+- 参照 URL は `CatalogSeed.kt` の相対パスをクライアントが API ベースURL(`ServerConfig.kt`)で解決: Android エミュ=`http://10.0.2.2:8090` / iOS シミュ=`http://127.0.0.1:8090`。平文HTTPは Android=`usesCleartextTraffic`, iOS=ATS例外 で許可済み。
 
 入手手段(対象外のみ):
-1. **AI生成 = `mock-server/fill_missing.py`(Pollinations)**。無料/匿名は 429 が厳しい。大量なら enter.pollinations.ai の **Secret キー(`sk_`)** を使う(レート無制限, `Authorization: Bearer <sk_>` ヘッダ)。キーは秘密=コミット禁止・環境変数で扱う。
-2. **同カテゴリの対象外画像を複製**(ネットワーク不要・確実。欠け埋めの最終手段。`images/` 内の対象外を `<id>-<n>.jpg` にコピー)。
-3. 実写にしたい(公開/商用)場合は **Unsplash / Pexels の無料API**(商用可・帰属不要)が最クリーン。キーは秘密扱い。
+1. **AI生成(推奨) = `mock-server/regenerate.py`**: FLUX.1-schnell(Apache-2.0)を mflux でローカル実行。モデル約9GB・メモリ約19GB・約25秒/枚。プロンプトは `regen_prompts.json`、`generated/` で目視確認後に `--apply <ファイル名...>` で反映(引数なしの `--apply` は対象全件を上書き)。
+2. **AI生成 = `mock-server/fill_missing.py`(Pollinations)**。匿名は 45 秒に 1 枚で、モデルが sana 固定かつ透かし入りのため配信画像には不向き。使うなら enter.pollinations.ai の **Secret キー(`sk_`)** を使う(`Authorization: Bearer <sk_>` ヘッダ)。キーは秘密=コミット禁止・環境変数で扱う。
+3. **同カテゴリの対象外画像を複製**(ネットワーク不要・確実。欠け埋めの最終手段。`images/` 内の対象外を `<id>-<n>.jpg` にコピー)。
+4. 実写にしたい(公開/商用)場合は **Unsplash / Pexels の無料API**(商用可・帰属不要)が最クリーン。キーは秘密扱い。
 
 罠(今回の学び):
 - キー無しの無料ソース(Openverse / Wikimedia Commons / Pollinations)は**多用で 429/403 になり一括取得が破綻**する。間隔を空けるかキーを使う。
 - **Openverse `license_type=all` は CC BY/BY-SA/BY-NC を含む**(対象外は `cc0`/`pdm` のみ)。Wikimedia は大半 CC BY-SA(帰属必要)。→ 対象外運用では使わない(本リポジトリでは取得スクリプトは削除済み)。
 - Wikimedia の画像DLは **python-urllib/独自UAが 403**。ブラウザ相当UAが要る。
-- **取得時に出所+ライセンスを記録する**(後からの逆引きは困難だった)。方針/台帳は `mock-server/COPYRIGHT.md` と `image-provenance.json`。
+- **取得時に出所+ライセンスを記録する**(後からの逆引きは困難だった)。方針/台帳は `mock-server/image-provenance.json`。
+- FLUX は GPU 競合時に Metal Internal Error (00000206) を断続的に出す(`regenerate.py` が小バッファ+再試行で対処)。シミュレータやエミュレータを減らすと安定する。
+- 同名で差し替えても**端末は古い画像のまま**(Coil 既定のディスクキャッシュ。iOS は `tmp/coil3_disk_cache`)。シナリオは文字の検証だけなので合格してしまう。確認は録画や画面で行い、端末はキャッシュ削除か再インストールする。
+- `server/Dockerfile` が画像をイメージに含める。Fleetest へ反映するには再ビルドして GHCR へ公開し、各ホストで再取得する(手元に古い `latest` があると自動更新されない可能性がある)。
 
 ## ソース分割の方針
 
