@@ -4,6 +4,7 @@
 # 最後の2行 "App (iOS): <パス>" / "App (Android): <パス>" は fleetest profile setup --app-path に渡すパス(AI が読む契約。書式を変えない)。
 # JDK は prepare.sh が入れる Homebrew の openjdk@25 だけを使う(iOS のビルドも Xcode のビルドフェーズで Gradle を呼ぶので要る)。
 # Android SDK が見つからなければ、引数なしのときは Android を飛ばす(android を明示したときは止める)。
+# iOS は、SDK と同じ版の Simulator ランタイムが無ければ xcodebuild -downloadPlatform iOS で入れてからビルドする(数 GB)。
 set -euo pipefail
 
 TARGET="${1:-all}"
@@ -29,6 +30,20 @@ built_android=""
 
 if [ "$TARGET" != "android" ]; then
   command -v xcodebuild >/dev/null 2>&1 || fail "xcodebuild not found (install Xcode)"
+  # Simulator 向けのビルドは、選択中の Xcode の SDK と同じ版の iOS ランタイムが無いと失敗する
+  # (fleetest の profile setup --auto-device と同じ判定: platform iOS・isAvailable・版の一致)
+  sdk_version="$(xcrun --sdk iphonesimulator --show-sdk-version)" || fail "could not read the iOS Simulator SDK version (xcrun failed)"
+  runtimes_json="$(xcrun simctl list -j runtimes)" || fail "xcrun simctl list runtimes failed"
+  has_runtime="$(printf '%s' "$runtimes_json" | /usr/bin/python3 -c '
+import json, sys
+want = sys.argv[1]
+rs = json.load(sys.stdin).get("runtimes", [])
+print("yes" if any(r.get("platform") == "iOS" and r.get("isAvailable") and r.get("version") == want for r in rs) else "no")
+' "$sdk_version")" || fail "could not read the simctl runtime list"
+  if [ "$has_runtime" != "yes" ]; then
+    echo "Downloading the iOS $sdk_version simulator runtime (several GB; this can take several minutes to tens of minutes) ..."
+    xcodebuild -downloadPlatform iOS
+  fi
   echo "Building the iOS app (Simulator) ..."
   (cd "$ROOT" && xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug \
     -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \

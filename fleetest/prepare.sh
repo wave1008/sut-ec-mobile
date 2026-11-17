@@ -51,10 +51,10 @@ done
 
 step 5 "Declaring the server to fleetest"
 if [ ! -d "TestProjects/$PROJECT" ]; then
-  # ツールの場所は fleetest-mobile の Scripts/install.sh 等と同じ規則: Package.swift の .package(path:) → 既定の隣
+  # ツールの場所は fleetest の Scripts/install.sh 等と同じ規則: Package.swift の .package(path:) → 既定の隣
   # head だと pipefail で SIGPIPE 失敗しうるので awk
   declared="$(sed -n 's/.*\.package(path: *"\([^"]*\)".*/\1/p' Package.swift | awk 'NR==1')"
-  FLEETEST="${FLEETEST:-${declared:-../fleetest-mobile}/.build/debug/fleetest}"
+  FLEETEST="${FLEETEST:-${declared:-../fleetest}/.build/debug/fleetest}"
   [ -x "$FLEETEST" ] || fail "fleetest not found at $FLEETEST (install fleetest first, or set FLEETEST to its path)"
   echo "Creating the test project $PROJECT ..."
   "$FLEETEST" project create "$PROJECT"
